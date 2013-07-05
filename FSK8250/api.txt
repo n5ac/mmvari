@@ -1,0 +1,57 @@
+=========================================
+◎MMTTY, MMSSTV, MMVARIとのインターフェース
+=========================================
+  EXTFSK.DLLは以下の５つのファンクションをエクスポートしなければなりません。
+
+extern "C" LONG __declspec(dllexport) __stdcall extfskOpen(LONG para)
+extern "C" void __declspec(dllexport) __stdcall extfskClose(void)
+extern "C" LONG __declspec(dllexport) __stdcall extfskIsTxBusy(void)
+extern "C" void __declspec(dllexport) __stdcall extfskPutChar(BYTE c)
+extern "C" void __declspec(dllexport) __stdcall extfskSetPTT(LONG tx)
+
+　各ファンクションは、__stdcall呼び出し規約(ファンクション側でスタックを調整する)で記述され、エクスポートしている名前に修飾があってはいけません。ただし各ファンクションの名前はアンダスコア(_)が１つ付加していても構いません。MMTTYは例えばextfskOpenを探し、それに失敗すると、_extfskOpenを探します。
+
+
+LONG extfskOpen(LONG para)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+[引数]
+	para:上位１６ビット	速度(例:４５）
+	     下位１６ビット	b1-b0	Stop (0-1, 1-1.5, 2-2)
+				b5-b2	Length (5, 6, 7, 8)
+[戻値]
+　TRUE - 成功, FALSE - 失敗
+[解説]
+  ポートをオープンします。Stop2が指定されてもStop1.5でオープンして下さい。
+
+  付属のサンプルではパラメータは無視され常にBaud=45.45, Stop=1.5でオープンされます。
+
+void extfskClose(void)
+~~~~~~~~~~~~~~~~~~~~~~
+[解説]
+  オープンしたポートをクローズします。
+
+LONG extfskIsTxBusy(void)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+[戻値]
+　TRUE - バッファがいっぱい, FALSE - バッファは空きがある
+[解説]
+  送信バッファがいっぱいかどうかを返します。
+[参考]
+　快適なDiddle操作を確保するため、送信バッファの個数は可能な限り小さくして下さい。ただし符号の連続タイミングを一定に保つ必要がある場合は最低限1個のバッファが必要です。付属のサンプルは1個のバッファを設けた例です。
+
+void extfskPutChar(BYTE c)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+[引数]
+	c:送信するデータ
+[解説]
+  送信するデータをバッファに１バイト書き込みます。MMTTYはこのファンクションを呼び出す前に必ずextfskIsTxBusy()を呼び出してバッファに空きがあるかどうかを調査します。
+
+void extfskSetPTT(LONG tx)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+[引数]
+	tx b0: 0-受信に切り替え, 1-送信に切り替え
+	   b1: 0-画像スキャン停止中, 1-画像スキャン中  (MMSSTVのみ)
+[解説]
+　PTTを切り替えます。MMTTYではb0のPTTのみがセットされますが、MMSSTVでは「RTS while SCAN」をONにしている場合、b1の画像スキャン情報もセットされます。
+
+73, Mako

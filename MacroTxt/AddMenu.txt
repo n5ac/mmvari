@@ -1,0 +1,29 @@
+<%DisableCR>
+#define	_Name1	拡張(&1)
+<%DeleteMenu=_Name1>
+<%AddMenu=_Name1, CWの速度(&C)..., Slider, CWの速度, CWSpeed, 10, 40>
+<%AddMenu=_Name1, デジタル出力レベル(&D)..., Slider, デジタル出力レベル, DigitalLevel, 1024, 32768, 1024>
+<%AddMenu=_Name1, ->
+<%AddMenu=_Name1, CQ DX(&1)  (リピート), OnCQDXClick, 1, 3, 3, 4000>
+<%AddMenu=_Name1, CQ DX(&3)  (リピート), OnCQDXClick, 3, 3, 3, 5000>
+<%AddMenu=_Name1, ->
+<%AddMenu=_Name1, リモート接続(&M)..., OnCommand, "<%SoundDevice=MONO,WLClient><%Radio=RPClient>">
+<%AddMenu=_Name1, リモート接続の解除(&R)..., OnCommand, "<%SoundDevice=MONO,-1><%Radio=NONE>">
+
+#proc	OnCommand	@Command
+<%DisableCR>@Command
+#endp
+
+#proc	OnCQDXClick	@Nline, @Ncq, @Ncall, @Interval
+<%DisableCR><%ClearTXW><%AutoClear><%TX><%RX>
+<%RepeatText=@Nline,<%RepeatText=@Ncq,CQ DX<%SP>>de<%RepeatText=@Ncall,<%SP><%MyCall>><%CR>>
+<%BS><%SP>pse DX k<%CR><%RepeatTX=@Interval>
+#endp
+
+#proc Slider @Title, @Command, @Min, @Max, @Step, @NumScales
+<%DisableCR>
+#macro <%Slider=@Title, <%@Command>, @Min, @Max, @Step, @NumScales>
+#if StrMacro(<%Input$>)
+<%@Command=<%Input$>>
+#endif
+#endp

@@ -1,0 +1,304 @@
+========================
+BetaVer0.45  2010/OCT/04
+========================
+- Added mfsk4, mfsk8, mfsk32, mfsk64, mfsk11, and mfsk22 modes
+- Improved the decoder of the qpsk mode
+- Added an option that restores the subchannel window status on a start up
+- Enhanced macro
+- Applied minor updates
+
+========================
+BetaVer0.44  2010/SEP/24
+========================
+- Added QPSK mode
+- Added a RTTY demodulator based on FFT
+- Added the FSK support (TNX to JA7UDE)
+	When a COM port is selected, the MMVARI internally controls the FSK keying. When EXTFSK is selected, EXTFSK generates the FSK keying. MMVARI and EXTFSK use Windows' multimedia timer so that they might have 1msec jitter.
+- Added the English web site URL.
+- Updated the JARTS web site URL.
+- Added the selection of COM8 to COM16.
+- Added the rig control menu.
+- Updated the sound device selection.
+
+========================
+BetaVer0.42  2007/JAN/15
+========================
+- Deleted the start-up warning message in the English environment
+
+========================
+BetaVer0.41  2005/MAR/20
+========================
+- Enabled the TX capability in the BPSK-VariJA (MBCS) mode (Tnx to JE4IVN)
+- Fixed typo in the English mode
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.40  2005/JAN/08
+========================
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.39  2004/NOV/06
+========================
+- Improved the gateway to Turbo Hamlog/Win version 5
+
+========================
+BetaVer0.38  2004/NOV/03
+========================
+- Added a gateway to Turbo Hamlog/Win version 5 (Tnx to JG1MOU)
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.37  2004/OCT/08
+========================
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.36  2004/SEP/30
+========================
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.35  2004/SEP/22
+========================
+- Expanded the macro capability
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.34  2004/SEP/11
+========================
+- Added event macros (e.g. OnPTT, OnQSO, OnStart)
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.33  2004/SEP/08
+========================
+- Improved the AFC for GMSK/PSK
+- Added OnTimer event macro
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.32  2004/SEP/04
+========================
+- Improved the decimation speed
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.31  2004/AUG/28
+========================
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.30  2004/AUG/15
+========================
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.29  2004/AUG/09
+========================
+- Fixed an inexcusable bug and applied some improvements
+
+========================
+BetaVer0.28  2004/AUG/07
+========================
+- Fixed a bug that disables RX after TX in the RTTY mode
+- Added the sound play back option
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.27  2004/AUG/03
+========================
+- Improved mfsk decoder (synchronization, AFC, processing speed, etc.)
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.26  2004/JUL/31
+========================
+- Added mfsk mode
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.25  2004/JUL/27
+========================
+- Added Expansion Macro Buttons (View menu)
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.24  2004/JUL/22
+========================
+- Expanded the macro capability
+	Added <%Menu=...> command
+	Supported Kenwood and JST245 in <%RadioKHz=...> command
+	Added <%RadioMode=...> command
+* For detailed information, refer to the pop-up menu and rig control sections in EMMVARI.TXT.
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.23  2004/JUL/19
+========================
+- Fixed a bug in the AFC detection level calculation
+- Added a macro for the rig frequency control
+* Three types of macros are now included
+	<%RadioKHz=YAESU-HF,14073.000>	FT1000MP, FT920, etc...
+	<%RadioKHz=YAESU-VU,14073.000>	FT847, FT736, etc...
+	<%RadioKHz=CI-V,14073.000>		ICOM
+	Example: 500Hz up
+	<%RadioKHz=YAESU-VU,<%RadioKHz>+0.5>
+- Fixed a couple of bugs and applied some improvements
+
+
+========================
+BetaVer0.22  2004/JUL/14
+========================
+- Improved AFC
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.21  2004/JUN/29
+========================
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.20  2004/JUN/28
+========================
+- Added several functions to the spectrum right click operation
+- Improved the synchronizing scheme for the off-clock signals
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.19  2004/JUN/26
+========================
+- Added notch filter (right click on the spectrum scope window)
+- Improved BPF
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.18  2004/JUN/12
+========================
+- Added rtty mode
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.17  2004/JUN/04
+========================
+- Expanded the macro capability
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.16  2004/MAR/20
+========================
+- Added MMTTY/MMSSTV custom sound
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.15  2004/MAR/02
+========================
+- Made the color mapping of the waterfall user-customizable
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.14  2004/FEB/28
+========================
+- Added an automatic TX alphabet character conversion (from two-byte alphabet code to single-byte)
+- Added 22050, 44100, 48000Hz sound clock frequencies 
+
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.13  2004/FEB/22
+========================
+- Fixed a bug that disabled the Kana transmission in the VariSTD/JA mode
+- User can customize the background color of the RX window
+- Added a pop-up menu in response to the right click on the RX window
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.12  2004/FEB/18
+========================
+- Fixed an exposure happening on some PCs
+- Added the 6000Hz clock frequency support for the sound device
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.11  2004/FEB/15
+========================
+- Fixed an exposure happening on some PCs (?)
+- Expanded the macro capability
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.10  2004/FEB/12
+========================
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.09  2004/FEB/09
+========================
+- Added BPSK and bpsk mode
+	BPSK - Not compatible with HALPSK or WINPSK/J (TX is inhibited on VariJA)
+	bpsk - Conventional standard varicode compatible with HALPSK and WINPSK/J (BPSK/bpsk have not been tested yet)
+- Added amplitude monitor windows for the debug of BPSK modulation. Right click on the Sync button to activate it.
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.08  2004/FEB/04
+========================
+- Improved the TX window editing
+- Expanded the macro capability
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.07  2004/JAN/27
+========================
+- Fixed a bug of the PTT control in RadioCommand
+- Added FSK modulation (fm=1.0) for V/UHF to accommodate the rig frequency drift
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.06  2004/JAN/23
+========================
+- Added q tool for calibrating the soundcard
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.05  2004/JAN/21
+========================
+- Added English menu and messages (Tnx Kim HL3IB and Sung HL1AQ)
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer0.04  2004/JAN/19
+========================
+- Included EProject.txt in the MMVARI package(Tnx JA7UDE)
+- Fixed a couple of bugs and applied some improvements
+
+========================
+BetaVer 0.03 2004/JAN/15
+========================
+- Changed the program name from MMGMSK to MMVARI (the modulation is subject 
+to change)
+- Changed the index mapping for Japanese font ($E040-$FEFF is remapped to 
+$A040-$BEFF)
+- Added an option that allows the user to change TX and TXOFF keys.
+- Fixed some bugs and applied minor improvements.
+
+========================
+BetaVer0.02
+========================
+- Added sound record and replay functions.
+- Added RadioCommand.
+- Added logging function.
+- Added the log linkage to TurboHamlog/Win.
+- Fixed some bugs.
+
+========================
+BetaVer0.01  2004/JAN/09
+========================
+- Added AFC level control in the RX tab.
+- Added a character code in the Edit menu.
+- Added VARICODE table in the option menu
+
+========================
+BetaVer0.00  2004/JAN/08
+========================
+- First beta released.

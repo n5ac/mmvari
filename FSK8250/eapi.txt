@@ -1,0 +1,60 @@
+=====
+Interface to MMTTY, MMSSTV, MMVARI
+=====
+EXTFSK.DLL must export the following five functions:
+
+extern "C" LONG __declspec(dllexport) __stdcall extfskOpen(LONG para)
+extern "C" void __declspec(dllexport) __stdcall extfskClose(void)
+extern "C" LONG __declspec(dllexport) __stdcall extfskIsTxBusy(void)
+extern "C" void __declspec(dllexport) __stdcall extfskPutChar(BYTE c)
+extern "C" void __declspec(dllexport) __stdcall extfskSetPTT(LONG tx)
+
+Each function must comply with __stdcall call function (stack is adjusted on the called function side).  The function name could be preceded by one underscore (_).  For example, if MMTTY fails to find extfskOpen(), it then looks for _extfskOpen().
+
+-----------------------------
+LONG extfskOpen( LONG para )
+-----------------------------
+Parameters
+	Upper 16 bits of para:	Speed (45 for example)
+	Lower 16 bits of para:	b1-b0	Stop (0-1, 1-1.5, 2-2)
+					b5-b2	Length (5, 6, 7 or 8)
+Returned value
+	TRUE = succeeded
+	FALSE = failed
+Note
+	This function opens the port.  Even if Stop 2 is specified, open with Stop 1.5.  The sample code ignores the parameters and always opens with Baud = 45.45 and Stop = 1.5.
+
+-------------------------
+void extfskClose( void )
+-------------------------
+Note
+	This function closes the port.
+
+----------------------------
+LONG extfskIsTxBusy( void )
+----------------------------
+Returned value
+	TRUE = Buffer is full
+	FALSE = Buffer is not full
+Note
+	This function returns the buffer status, that is, full or not full.  For clean diddling, keep the buffer length as small as possible.  For making continuous transmission, however, the buffer should have at least one slot capacity.  The sample code has one slot for the buffer.
+
+------------------------------
+void extfskPutChar( BYTE c )
+------------------------------
+Parameter
+	c: TX data
+Note
+	This function writes a byte data to the buffer.  Before writing the data, MMTTY always calls extfskIsTxBusy() to see if the buffer can accept the new data.
+
+-----------------------------
+void extfskSetPTT( LONG tx )
+-----------------------------
+Parameter
+	tx b0: 0 ? Switch to RX, 1 ? Switch to TX
+	tx b1: 0 ? Not scanning RX image, 1 ? Scanning RX image (MMSSTV only)
+Note
+	This function makes and breaks PTT.  MMTTY uses bit 0 only.  MMSSTV set bit 1 while it is scanning a RX image if RTS while scan option is enabled.
+
+73, Mako
+

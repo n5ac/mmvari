@@ -1,0 +1,1016 @@
+MMVARI operation manual
+	Version 0.45 (October 5, 2010) by JE3HHT Makoto Mori
+	Translated into English by JA7UDE Nobuyuki Oba
+
+==========
+PREFACE
+==========
+First off, please read EPROJECT.TXT, which describes the objective of MMVARI.
+
+This document explains the basic operation of the MMVARI program. MMVARI is still under development. You could find on-line tips in the status bar at the bottom of the main window by pointing the mouse cursor at the entity of interest.
+
+==========
+Modulations
+==========
+MMVARI version 0.44 and later support
+	- qpsk	Compatible with HALPSK, WINPSK/J, standard VARICODE
+MMVARI version 0.25 and later support the following modulations:
+	- GMSK	Default for MBCS (Multi Byte Character Set)
+	- FSK	For V/UHF rigs, which may have QRH or frequency drifted
+	- BPSK	Not compatible with WINPSK/J in MBCS. Care should be taken for VariJA
+	- bpsk	Compatible with HALPSK, WINPSK/J, standard VARICODE
+	- rtty	This is just a quick addition to MMVARI. Only the standard BAUDOT code has been implemented. Only capital letters, figures, and a few symbols are supported.
+	- mfsk	MFSK16 is implemented. The code is MFSK-VARICODE.
+
+* Be careful not to overdrive the transmitter for the PSK operation.
+  (DO NOT USE A SPEECH PROCESSOR)
+
+* According to the PSK transmission speed, the following names are used:
+	PSK31		31.25Bps
+	PSK63		62.5Bps
+	PSK125		125.0Bps
+	PSK250		250.0Bps
+
+* RTTY implemented in MMVARI are:
+	- 170Hz shift. It can be changed by macro command
+	 <%TxShift...>, <%RxShift...>.
+	- Carrier frequency is the center frequency
+	- RTTY-L for LSB (default) and RTTY-U for USB (reverse)
+	- 5-bit BAUDOT S-BELL only
+	- UOS on the RX side is ON. It can be changed
+	 by macro command <%UOS=ON/OFF/ONOFF>.
+	- UOS on the TX side is always ON.
+	- LTR diddle is always engaged. It can be changed
+	 by macro command <%DIDDLE=BLK/LTR>.
+	- AFSK only (no FSK support).
+
+* MFSK implemented in MMVARI are:
+					mfsk16	mfsk8	mfsk31	mfsk32	mfsk64	mfsk11	mfsk22
+Symbol baudrate		15.625	7.8125	31.25	31.25	62.5		10.767	21.533
+Tones				16		32		8		16		16		16		16
+Tone space(Hz)			15.625	7.8125	31.25	31.25	62.5		10.767	21.533
+MAX FREQ shift(Hz)		234.375	242.1875	218.75	468.75	937.5	161.499	322.988
+Transmission speed(bps)	31.25	19.53125	46.875	62.5		125.0	21.533	43.066
+Viterbi				NASA K=7, R=1/2
+Interleaver			Diagonal interleaver
+VARICODE				MFSK standard
+
+type		Speed	Actual speed
+mfsk4	3.9063	(3.90625 baud, 32 tones)
+mfsk8	7.8125	(7.8125 baud, 32 tones)
+mfsk11	10.767	(10.7666015625 baud, 16 tones)
+mfsk16	15.625	(15.625 baud, 16 tones)
+mfsk22	21.533	(21.533203125 baud, 16 tones)
+mfsk31	31.25	(31.25 baud, 8 tones)
+mfsk32	32.0		(31.25 baud, 16 tones)
+mfsk64	62.5		(62.5 baud, 16 tones)
+
+============================
+How to tune in the signal
+============================
+To get tune into the target signal, click on the center of the signal displayed in the FFT or waterfall window. You may want to set the waterfall range to 1K or 2K in order to make this operation easier. Alternatively, you could do it by tweaking the receiver dial, but you have to get used to doing so.
+
+You could use either LSB or USB for GMSK, FSK, BPSK, and bpsk. You really do not have to care about the LSB or USB. For RTTY, however, use rtty-L for LSB and rtty-U for USB to avoid the reverse shift.
+
+* To get tuned into the target signals in the mfsk mode, click on the edge of the signals. Click on the right edge in LSB. Click on the left edge in USB. Use mfsk-L for LSB and mfsk-U for USB.
+
+
+=====
+BPF
+=====
+MMVARI provides four bandwidth choices in the built-in band pass filter. Narrower filters are recommended in the QRM condx. It should be noted, however, the narrower the BPF, the more CPU power the MMVARI consumes.
+
+
+=====
+ATC
+=====
+ATC is Automatic Timing Control. It automatically adjusts the RX synchronization timings in accordance with the RX signals. Leave it on in the normal condx. Refer to the clock calibration section for more information.
+
+* It is NOT Automatic Threshold Control of MMTTY. Do not get them confused.
+
+* MMVARI version 0.20 or later uses a new synchronization method for receiving signals. It should give better decoding capability even for the signals that the ATC is hard to follow. Bear in mind, however, it is strongly recommended that you calibrate the soundcard clock in order to increase the readability of your signals. Refer to the clock calibration section for more information. 
+
+
+================
+RX operation tips
+================
+By mouse click, you can capture a word in the RX window and transfer it to the log. MMVARI automatically picks out the call sign and RST, and transfers them to the corresponding logging fields. For the words other than the call sign or RST, you will see a pop-up window, which requests you to specify the destination of the selected words. Right click always gives you the pop-up window.
+Use the scroll bar on the right side of the RX window to scroll back the received texts. The RX window memorizes the latest 1024 lines in the buffer.
+
+
+================
+TX operation tips
+================
+In the TX window, you can type ahead the characters to send. The characters to the cursor position will be sent.
+
+
+==================
+TX/RX switch over
+==================
+To start transmission, push the TX button at the top left corner of the main window. Push the button again to return to RX. MMVARI sends the characters in the TX window, and then returns to RX after sending all the characters in the TX buffer.
+
+The TXOFF button forces MMVARI to get back to RX immediately.
+
+* By default, the ESC key is assigned for the short cut of TXOFF. In case you are using the ESC key for IME, assign another key for TXOFF. It can be done in the TX tab of the MMVARI setup window.
+
+
+==============
+Macro
+==============
+MMVARI is equipped with 144 macro buttons. The bottom part of the main window shows the buttons of the current page. You can scroll up and down the current page by clicking the up and down arrows located on the right of the buttons.
+Left click calls the macro. Right click gives you the macro-editing window. You could call a macro by hitting a function key.
+
+MMVARI macro offers powerful functions, such as text replacement, program control, and conditional operations. Right click on the macro button to open the macro-editing window. Push the MACRO button to get the macro list popped up. Push the COND button to get the conditional execution list popped up.
+
+
+1. Preliminary notes
+~~~~~~~~~~
+In the macro-editing window, the sentence containing macro is called a macro sentence. The sentence, which is generated by interpreting macro, is called an unfolded sentence.
+
+MMVARI does an immediate macro interpretation right after the macro button is pushed. It does not support a delayed interpretation, which MMTTY supported. For example, if you want to execute a macro sentence with <%HisRST> macro, you must have the RST report in the His field BEFORE you hit the macro button.
+
+Macros are categorized into two groups:
+	1) Text macro (e.g., <%HisCALL>, <%HisRST>)
+	2) Command macro (e.g., <%TX>, <%NETON>).
+
+
+2. Position and effect of the macro
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+<%RX> and <%TX> macros are executed independently of its position in the sentence. For example, the following three sentences work in the same way, that is, MMVARI switches the rig to TX, sends VVV123, and switches the rig back to RX.
+	<%TX>VVV<%RX>123
+	<%TX><%RX>VVV123
+	VVV<%TX><%RX>123
+
+
+<%MoveTop> and <%MoveEnd> are command macros that place the unfolded sentence at the specific position. The example below inserts the unfolded sentences just before the transmitting TX messages.
+
+	<%MoveTop><%HisCall> de <%MyCall> I had QRM in your last transmission.
+	<%MoveEnd>
+
+*Conditional execution precedes the macro command. All the macro and sentences in the false condition block are treated as empty. See section 8 below for details.
+
+
+3. Insert position of unfolded sentence
+~~~~~~~~~~~~~~~~~~
+The unfolded sentence is inserted at the current cursor position in the TX window. However, if the macro sentence has <%RX> command, the unfolded sentence gets behind the TX messages irrespective of <%MoveEnd> command.
+
+
+4. CWID
+~~~~~~
+If the unfolded sentence is composed of CWID only, MMVARI sends the CWID. When the unfolded sentence has both CWID and characters, MMVARI sends them in the specified order. You may want to send CWID and go back to RX without any MMVARI signals. In such a case, do not place a CR (carriage return) at the end of the sentence. The following example would give a clear solution.
+	<%TX>TNX AGN 73, SK...<%CWID><%RX><%EOF>
+
+
+5. Automatic clear of TX window
+~~~~~~~~~~~~~~~~~~~~
+To automatically clear the TX window every time when you go back to RX, use <%AutoClear> macro.
+	BTU <%HisCall> de <%MyCall> KN
+	<%RX><%AutoClear>
+
+* If you canceled the transmission by TXOFF, <%AutoClear> does not work.
+
+
+6. TX repeat
+~~~~~~~~~~~~~~
+<%RepeatTX=...> command sends the unfolded sentence repeatedly. It implicitly includes <%TX> and <%RX> commands, so that you do not have to them explicitly (inserting them would even give the same result). The repeat interval is defined in millisecond unit. <%RepeatTX=5000> gives you 5 second interval between repeated transmissions.
+
+* During this command being active, the macro button stays pushed. Push the button again or push the other button to cancel this operation.
+
+* Clicking on the spectrum, waterfall, RX window, TX window, and TXOFF also cancels this operation.
+
+* The following example is to repeatedly send CQ calls until the squelch opens.
+	#define	ReceiveTime	5000
+	#if !IsSQ
+	<%RepeatTX=ReceiveTime><%ClearTXW>
+	CQ CQ CQ de <%MyCall> <%MyCall> <%MyCall> pse (<%VARITYPE>) K
+	#endif
+
+
+* If you want to repeat a macro without TX, use <%Repeat=...> command. The next example shows a message box when MMVARI receives "CQ" string.
+
+	#define	_CaptureString	CQ
+	#if !IsRepeat
+	#macro <%SetCaptureLimit>
+	#endif
+	#if IsCaptureText(<%String=_CaptureString>)
+	#macro <%Message="<%String=_CaptureString>" was detected>
+	#else
+	#macro <%Repeat=1000>
+	#endif
+
+
+7. Program execution
+~~~~~~~~~~~~~~~~~~
+With <%Execute=...> command macro, you can execute any program you want. The parameter field defines the program name and its arguments. If you start a program that uses the soundcard, execute <%Suspend> command to make MMVARI release the soundcard temporarily.
+
+The following example gets the MMSSTV started.
+	<%Suspend><%Execute=C:\MMSSTV\MMSSTV.exe>
+
+You can terminate MMVARI and then start MMSSTV by
+	<%Suspend><%Execute=C:\MMSSTV\MMSSTV.exe><%Exit>
+
+* You can override the Windows PATH environment by specifying the full path of the program.
+
+
+8. Conditional unfolding block
+~~~~~~~~~~
+MMVARI macro supports conditional unfolding block. Using the conditional unfolding block and macro commands cooperatively, you can compose many useful sentences.
+
+The syntax of the conditional unfolding block is
+
+	#if test1		Start of conditional unfolding block
+	   |			<-- Execute if test1 is true
+	#elseif test2	Check another condition
+	   |			<-- Execute if test1 is false and test2 is true
+	#else		Otherwise
+	   |			<-- Execute otherwise
+	#endif		End of conditional unfolding block
+
+The syntax rules used here are:
+1) The conditional unfolding block must start with #if and end with #endif.
+2) The conditional command (e.g., #if, #elseif) and its argument (e.g., test1) must be in the same row. The other macro command must not be in the same row.
+3) #elseif and #else can be omitted.
+4) Nesting is allowed up to 64 levels.
+5) ! inverts the true/false condition. For example, "#if !IsCall" is true if the Call box in the main window is unfilled.
+6) There are three types of arguments:
+	Is: Monomial condition
+	Str: String condition
+	Val: Value condition
+7) Monomial condition returns Boolean value.
+8) String and value conditions are used with the following operators and return Boolean value.
+	=	True if equal to
+	!=	True if not equal to
+	>	True if greater than
+	<	True if less than
+	>=	True if greater than or equal to
+	<=	True if less than or equal to
+	>>	True if the string contains the specified word
+	Examples:
+	#if ValFreq >= 144		True if the frequency is larger than or equal to 144
+	#if StrMacro(<%HisQTH>) >> Osaka	True if QTH contains Osaka
+
+9) Multiple conditions using && (AND operator) and || (OR operator) are supported.
+Examples:
+#if IsNET && IsAFC	True if both NET and AFC are turned on
+#if IsNET || IsAFC		True if either NET and AFC is turned on
+
+The following example calls him/her only if the call box of the main window has been filled with the call sign.			
+
+	#if IsCall
+	<%TX><%RX>
+	<%HisCall> <%HisCall> de <%MyCall> <%MyCall> pse k
+	#endif
+
+The next example sends different sentences by comparing my entity and his/her entity. 
+	<%TX>
+	#if IsLocal
+	It is great to see you again. Thanks for the call.
+	#else
+	Hello, thanks for your call.
+	#endif
+
+The example below generates CQ call in different modulation methods according to the band.
+
+	#if ValFreq >= 144
+	<%MODE=FSK><%SkipCR>
+	#else
+	<%MODE=GMSK><%SkipCR>
+	#endif
+	<%TX>
+	CQ CQ CQ de <%MyCall> <%MyCall> <%MyCall> pse (<%VARITYPE>) k
+	<%RX>
+
+The next example opens the text input window and transmits the input text in CW.
+
+	#if StrMacro(<%Input=Input CW text>)
+	<%TX><%RX><%CWID=<%Input$>><%EOF>
+	#endif
+
+Right clicking on the spectrum or waterfall window gives you a pop-up menu, Send AS in CW, which actually has the following macro sentences implemented inside MMVARI. This example switches TX pages not to lose the TX sentences you are editing.
+
+	#if !IsTX
+	<%AutoNET><%AutoReturn><%SkipCR>
+	#if ValPage!=4
+	<%Page=4><%SkipCR>
+	#else
+	<%Page=3><%SkipCR>
+	#endif
+	<%ClearTXW><%SkipCR>
+	#endif
+	<%TX><%CWID=@><%RX><%EOF>
+
+
+9. String variable
+~~~~~~~~~~~~
+The MMVARI macro supports string variables. The string variable is defined by using #define, and referred to by using <%String=name>. It can be used for the argument of a conditional statement and for the parameter of macro commands.
+
+The syntax of #define is
+	#define	Name	String
+
+Name is an arbitrary alphanumeric character string that does not start with a numeric character. String can be a string consisting of any characters. It can be a macro command or other string variables. 
+
+	Example:	#define	Greetings	MAIDODESU...
+			#define	NowSpeed	<%BAUD>
+			#define	ImaSpeed	NowSpeed
+
+* There is no limitation in the number of the variables defined by #define. If the same variable is redefined, it automatically is preceded by the new value.
+
+* The variables are all global with respect to macros. Therefore, a macro can refer to the variable defined by another macro.
+
+* The values of the variables are cleared at the timing of the program termination.
+
+* #define instruction is executed in the first pass.
+
+The macro shown below is an example of conditional WX setting. Once the information is set to WX string (TodayWX), the WX string can be unfolded to the macro sentence without asking the user to input the value.
+
+	#if !IsDefined(TodayWX) || !StrMacro(<%String=TodayWX>)
+	#define	TodayWX	<%Input=Input_WX>
+	#endif
+	#if StrMacro(<%String=TodayWX>)
+	Today's weather is <%String=TodayWX>.
+	#endif
+
+The following example shows how to define the frequently changed portion in the macro.
+
+	#define	Boundary	14
+	#define	MyRIG		FT1000MP(50W)
+	#define	MyLANT	Vertical(7m)
+	#define	MyHANT	Magnetic loop(90cm)
+	#if ValFreq < Boundary
+	#define	MyANT		MyLANT
+	#else
+	#define	MyANT		MyHANT
+	#endif
+	My rig is <%String=MyRIG>, and antenna is <%String=MyANT>.
+
+The next example gives the QTH string by referring to the JCC number.
+
+	#define	QTH_HOME	Takatsuki-city
+	#define	QTH_25006	Mishima-gun
+	#define	QTH_2701	Kobe-city
+	#if StrNote >> 25006
+	#define	MyQTH		QTH_25006
+	#elseif StrNote >> 2701
+	#define	MyQTH		QTH_2701
+	#else
+	#define	MyQTH		QTH_HOME
+	#endif
+	My QTH is <%String=MyQTH>.
+
+10. Output print format and built-in calculator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  <%Format=...> command is a macro, which specifies the output print format with a simple calculation function. The notation is:
+	<%Format=format,equation>
+--- Format ----
+It follows the printf(...) syntax of the C language. You could omit the symbol in [].
+
+	%[-][#][0][w][.p]TYP
+
+	-	Left aligned
+	0	0s are padded at the head of the output
+	w	Copy the minimum number of characters to the output
+	.p	Copy the minimum fractions to the output
+	TYP	Format type of the output
+
+	TYP	Type		Output
+	c	Character	One character
+	s	String		String
+	d	Integer		Decimal number with sign
+	i	Integer		Decimal number with sign
+	o	Integer		Octal number without sign
+	u	Integer		Decimal number without sign
+	x	Integer		Hexadecimal number without sign (use a, b, c, d, e, and f)
+	X	Integer		Hexadecimal number without sign (use A, B, C, D, E, and F)
+	f	Floating num	[-]dddd.dddd with sign
+	e	Floating num	[-]d.dddd or e[+/-]ddd with sign
+	g	Floating num	e or f format with sign
+	E	Floating num	Same as e (use E for the exponential symbol)
+	G	Floating num	Same as g (use E for the exponential symbol)
+
+--- Equation ---
+As the parameters for the equation, you could assign digits, macro commands, and string variable. The macro command and string variable are immediately interpreted as applied.
+Arithmetic operators supported are:
+	+	Addition
+	-	Subtraction
+	*	Multiplication
+	/	Division
+	%	Remainder
+The priority of the operators follows the standard arithmetic rule. Use () to control the calculation order.
+	10 + 20 * 30 = 610
+	(10 + 20) * 30 = 900
+	
+--- Examples ---
+<%BAUD=<%Format=%f,<%BAUD>*2>>
+  Double the baud rate
+<%Format=%c,<%Skip$=1,<%HisRST>>>
+  Returns the second character of HisRST (579 -> 7)
+<%TxCarrier=<%Format=%d,<%RxCarrier>+100>>
+  Put the RX carrier frequency added by 100Hz to the TX carrier frequency
+
+11. Custom pop-up menu
+~~~~~~~~~~~~~~~~~~~~~~~
+ Using macro, the user can make a custom pop-up menu, which is useful for reducing the number of the macro buttons for daily use.
+
+ <%Menu=...> command generates a pop-up menu. The selected string in the menu is obtained by <%Input$> command. Alternatively, the index of the selected string can be retrieved by ValMenu property.
+
+ Menu items are delimited by comma (,). If the string has a comma inside, put the string in the double quotation marks ("string"). The string can recursively have a macro. There is no limitation for the number of menu items.
+	<%Menu=Menu1, Menu2, Menu3, Menu4, ...>
+	<%MenuB=Index, Menu1, Menu2, Menu3, Menu4, ...>
+
+* <%MenuB=...> command can be used to add a black bullet in front of each item.
+
+ Use a minus character (-) to place a separator between the menu items. The access key is defined by an ampersand followed by a character. 
+	<%Menu=Menu&1, Menu&2, -, Menu&3, Menu&4, ...>
+	<%MenuB=Index1, Menu&1, Menu&2, -, Index2, Menu&3, Menu&4, ...>
+
+ The example below shows a menu including end of QSO messages and put the selected string to the TX window.
+	<%Menu=<%DearName> Thank you..., Sayonara..., "TNX AGN <%DearName>, 73..."><%Input$>
+
+ To specify the operation by using the index of the menu, use ValMenu property. In this particular case, because the if clause is interpreted in the first path, place #macro to make <%Menu=...> also be interpreted in the first path.
+
+	#macro <%Menu=&73 CU SK, &TU SK EE, &SU, &EE>
+	#if ValMenu==1
+	<%TX><%RX><%CWID=73CU:><%EOF>
+	#elseif ValMenu==2
+	<%TX><%RX><%CWID=TU:EE><%EOF>
+	#elseif ValMenu==3
+	<%TX><%RX><%CWID=SU><%EOF>
+	#elseif ValMenu==4
+	<%TX><%RX><%CWID=EE><%EOF>
+	#endif
+
+* If the pop-up menu selection is canceled, ValMenu returns 0 and <%Input$> has null string.
+* The separator cannot be selected. The value of ValMenu property does not include the separator.
+
+12. Rig control using Macro
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  MMVARI can control the rig by using macro commands below.
+	<%RadioKHz>		Returns the VFO frequency
+	<%RadioKHz=...>		Sets the VFO frequency
+	<%RadioMode>		Returns the mode
+	<%RadioMode=...>	Sets the mode
+	<%RadioOut=...>		Sends the command to the rig
+	#if IsRadioLSB		Check up the heterodyne (LSB or USB)
+
+ These commands will be provided for the remote operation over the network, but they sometimes are useful in the situation where the PC is hooked up direct to the rig.
+
+* These macro commands are effective only when the rig control port has appropriately been set up. If not, these macro commands will be ignored.
+* To make <%RadioKHz> and <%RadioMode> effective, the VFO polling should be set up correctly. However, they return the values that are specified by <%RadioKHz=...> and <%RadioMode=...> commands.
+
+
+<%RadioKHz=RigType,RigFreq(KHz)>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ This command sets the VFO frequency of the rig. Currently, RigType supports the following transceiver types:
+
+	RigType		Rig
+	YAESU-VU	FT847, FT736, etc.
+	YAESU-HF	FT1000MP, FT920, etc.
+	YAESU-NEW	FT9000, FT2000, etc.
+	CI-V		ICOM
+	CI-V4		ICOM (four-byte command)
+	KENWOOD	KENWOOD
+	JST245		JRC JST245
+
+*In CI-V, MMVARI sends five-byte commands for the frequency set operation even under 100MHz. In case it fails, try CI-V4, in which MMVARI sends four-byte commands.
+
+ The next example gets the input window popped up and sets the rig frequency.
+ 	#define	_Rig	YAESU-HF
+	#macro <%IME=OFF>
+	#if StrMacro(<%Input=Input VFO FREQ(KHz)>)
+	#if IsRadioLSB
+	#macro <%RadioKHz=_Rig,<%Input$>+<%RxCarrier>*0.001>
+	#else
+	#macro <%RadioKHz=_Rig,<%Input$>-<%RxCarrier>*0.001>
+	#endif
+	#endif
+
+ The example below shows a menu and sets the rig frequency.
+	#define	_Rig	YAESU-VU
+	#macro <%Menu=7028.5,10141.5,14072.5,18102.5,21072.5,28072.5>
+	#if ValMenu
+	#if IsRadioLSB
+	#macro <%RadioKHz=_Rig,<%Input$>+<%RxCarrier>*0.001>
+	#else
+	#macro <%RadioKHz=_Rig,<%Input$>-<%RxCarrier>*0.001>
+	#endif
+	#endif
+
+ These macro statements increase the rig frequency by 500Hz.
+	#define	_Rig	JST245
+	#macro <%RadioKHz=_Rig,<%RadioKHz>+0.5>
+
+The example below forces the RX carrier frequency to 1750Hz and gets the rig frequency tuned to it (to avoid TX with low carrier frequency). 	#define	_Tone	1750
+	#define	_Rig	CI-V
+	#define	_OffKHz	<%Format=%f,(<%RxCarrier>-_Tone)*0.001>
+	#if IsRadioLSB
+	#macro <%RadioKHz=_Rig,<%RadioKHz>-_OffKHz> 	#else
+	#macro <%RadioKHz=_Rig,<%RadioKHz>+_OffKHz>
+	#endif
+	#macro <%RxCarrier=_Tone>
+
+<%RadioMode=RigType,RigMode>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This command sets the rig mode. The supported RigType is the same as <%RadioKHz=...>. RigMode can be one of LSB, USB, CW, AM, FM, RTTY, PACKET.
+
+	Example: <%RadioMode=KENWOOD,LSB>
+
+* It should be noted that not all the rigs support the above modes. If you want to set a rig specific mode, use <%RadioOut=...> command instead.
+
+The macro statements bellow show a selection menu and set the rig mode.
+	#define	_Rig	YAESU-VU
+	#define	_t_Mode	LSB,USB,CW,AM,FM,RTTY,PACKET
+	#macro <%MenuB="<%Table=<%RadioMode>,_t_Mode>",_t_Mode>
+	#if ValMenu
+	#macro <%RadioMode=_Rig,<%Input$>>
+	#endif
+
+<%RadioOut=character_string>
+~~~~~~~~~~~~~~~~~~
+ This command sends a radio command to the rig. It will work for any rig. Use the following keyword to specify byte data in hexadecimal number.
+
+	\$##...	##=00-FF	Specify the byte data string in the hexadecimal format
+			(Example: \$FE55AA  -> $FE,$55,$AA)
+			ICOM CI-V address can be expressed by xx
+	\x##		##=00-FF, Specify one byte in the hexadecimal format
+ 			(Example: \xFE\x55\xAA  -> $FE, $55, $AA)
+	\w##		##=00-99, Specify the delay time 
+			(Example: \w05  -> wait 50ms)
+	\r		Send a carriage return
+	\n		Send a line feed
+	\c....		Comment
+
+	\\		'\' send character
+	Others		Send the character as is
+
+* For more information on the radio command, refer to the manual of your rig.
+
+
+[Examples]
+Set the VFO-A filter width of Yaesu FT-1000MP to 500Hz
+	<%RadioOut=\$020000008C>
+Exchange ICOM IC-706's VFO A and B
+	<%RadioOut=\$FEFExxE007BOFD>
+Put 14.073MHz to VFO-B of Kenwood TRX
+	<%RadioOut=FB00014073000;> Change the mode of Yaesu FT-847 to CW(W)
+ (<%RadioMode=YAESU-VU,CW> will change the mode to CW(N) )
+	<%RadioOut=\$0200000007>
+
+#if IsRadioLSB
+~~~~~~~~~~~~~~
+This "if clause" checks the rig heterodyne. It can be used for the frequency-offset calculation. MMVARI returns TRUE or FALSE by referring to the rig mode.
+	Return value		Rig mode
+	TRUE			LSB, RTTY, PACKET
+	FALSE			Other modes
+ Before using this clause, you have to set up the VFO polling and make the frequency adjustment. MMVARI, however, returns TRUE or FALSE if the mode has been set up with <%RadioMode=...>.  
+
+* If the mode is not either LSB or USB, MMVARI would not be able to detect the rig heterodyne correctly.
+* Use <%RadioMode> to obtain the original rig mode.
+
+
+13. Event macro
+~~~~~~~~~~~~~~~~~
+Event macro is a macro that is called when the specified event occurs. The following macros are provided in MMVARI.
+	OnTimer:	Called every second
+	OnPTT:	Called when the PTT status is changed
+	OnQSO:	Called when the QSO button is depressed
+	OnFind:	Called when HisCall property is set
+	OnStart:	Called once when MMVARI is started
+	OnBand:		Called when the log panel band is changed
+	OnExit:	Called once when MMVARI is terminated
+	OnMode:	Called when the mode is changed
+	OnSpeed:	Called when the transmission speed is changed
+	OnClick:		Called when a text in the RX window is clicked
+	OnFFTScale:	Called when the FFT scale is changed
+
+[Event macro definition by MMVARI menu]
+~~~~~~~~~~~~~~~~~~~~~~
+Event macros can be defined in the TX tab of the MMVARI setup menu. Select the event macro from the drop-down list and push the EDIT button. If you want to disable the macro execution, just erase the content of the macro.
+
+The example below is defined in the OnTimer event macro, and gets the AFC detected frequency popped on the waterfall every second.
+
+	<%WaterMsg=4,<%AFCFrequency>Hz>
+
+The next example is defined in the OnQSO event macro, and shows the status on the RX pane if the QSO button is depressed. The status is also recorded in the RX log.
+
+	#if IsQSO
+	#macro <%RxStatus=LogON <%HisCall> on <%BAND>/<%MODE>>
+	#else
+	#macro <%RxStatus=LogOFF <%HisCall>>
+	#endif
+
+The next sample macro is defined in the OnMode macro, and switches the macro button page when the mode is changed.
+
+	#if StrMode>>rtty
+	#macro <%SeekTop><%SeekNext>
+	#else
+	#macro <%SeekTop>
+	#endif
+
+[Event macro definition by macro command]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Every event macro can be defined in the macro statement as follows:
+	<%OnTimer=...>
+	<%OnPTT=...>
+	<%OnQSO=...>
+	<%OnFind=...>
+	<%OnBand=...>
+	<%OnStart=...>
+	<%OnExit=...>
+	<%OnMode=...>
+	<%OnSpeed=...>
+	<%OnClick=...>
+	<%OnFFTScale=...>
+
+The next macro statement, which could be defined in a macro button, specifies an operation in the OnTimer event.
+
+	<%OnTimer=<%WaterMsg=4,<%AFCFrequency>Hz>>
+
+If you need to define two or more macro commands in a single macro statement, use \r\n as the delimiter.
+  
+	<%OnTimer=#if@IsSQ\r\n#macro <%WaterMsg=4,<%AFCFrequency>Hz>\r\n#endif>
+
+The next sequence of the macro commands shows a popup window, with which the user can select the operation of the OnTimer macro.
+
+	#macro <%Menu=AFC, Metric(MFSK), RadioMode, WaterNoise, UTC, Local, -, Stop>
+	#if ValMenu == 1
+	#macro <%OnTimer=<%WaterMsg=4,<%AFCFrequency>Hz>>
+	#elseif ValMenu == 2
+	#macro <%OnTimer=<%WaterMsg=4,<%MetricMFSK>>>
+	#elseif ValMenu == 3
+	#macro <%OnTimer=<%WaterMsg=4,<%RadioMode>>>
+	#elseif ValMenu == 4
+	#macro <%OnTimer=<%WaterMsg=4,<%WaterNoise>dB>>
+	#elseif ValMenu == 5
+	#macro <%OnTimer=<%WaterMsg=4,<%UTIME>z>>
+	#elseif ValMenu == 6
+	#macro <%OnTimer=<%WaterMsg=4,<%LTIME>>>
+	#elseif ValMenu == 7
+	#macro <%OnTimer=>
+	#endif
+
+The next sequence gives a macro edit menu. It is supposed to be defined in a macro button.
+
+	#macro <%Menu=<%Events>>
+	#if ValMenu
+	#macro <%EditMacro=<%Input$>>
+	#endif
+
+
+14. Procedure
+~~~~~~~~~~~~
+MMVARI supports a procedure call, which facilitates repeating calls for the same operation. A macro command can the predefined procedure as many times as required. There is no limit in the number of procedures to be defined. The procedure can also be used as a handler for the extended menu.
+
+[Procedure definition]
+~~~~~~~~~~~~~~~~~~~~
+A procedure is defined between #proc and #endp. The format of the procedure is:
+
+	#proc  Name  Dummy1, Dummy2...
+		|
+	#endp
+
+Name is the name of the procedure. It must begin with an alphabet.
+Dummy1, Dummy2... are the symbols are pseudo parameters effective only in the procedure. They are replaced with the arguments of the procedure caller when the procedure is called. Dummy can be omitted. A procedure can have up to 64 Dummy parameters.
+
+A procedure example
+
+	#proc Slider @Title, @Command, @Min, @Max, @Step, @NumScales
+	<%DisableCR>
+	#macro <%Slider=@Title, <%@Command>, @Min, @Max, @Step, @NumScales>
+	#if StrMacro(<%Input$>)
+	<%@Command=<%Input$>>
+	#endif
+	#endp
+
+* The definition of the procedure does not evaluate the parameters. The parameters are interpreted when the procedure is actually called.
+
+* The function of the Dummy is just a simple text replacement. In order to avoid unexpected replacement, it is a good idea to assign a long name to Dummy or to put @ ahead of the name.
+
+* The procedure definition remains effective until the termination of the MMVARI program. Therefore, the procedure defined in the OnStart event can be called by any macro commands during the MMVARI run. If a procedure is redefined as the same name, the last definition is effective.
+
+[Procedure call]
+~~~~~~~~~~~~~~~~~~~~~~~~
+A macro command calls a procedure by  <%CallProc=Name, Arg1, Arg2...>.
+Name is the procedure name defined in #proc.
+Arg1, Arg2, ... are the argument for the procedure. If the number of arguments is less than that of Dummy(s) in the procedure, Dummy(s) is assigned NULL. If the number of arguments is larger than that of Dummy(s), excessive arguments are just discarded.
+
+An example of the procedure call
+	<%CallProc=Slider, CW speed, CWSpeed, 10, 40>
+	<%CallProc=Slider, Digital output level, DigitalLevel, 1024, 32768, 1024>
+	<%CallProc=Slider, Play back speed, PlayBackSpeed, 1, 20>
+
+* The procedures are defined in the first path. The procedure calls <%CallProc=...> are executed in the second path. Therefore, the procedure definition can be placed after the macro command that calls the procedure. However, <%CallProc=...> in #macro is executed in the first path, and thus the procedure must be defined prior to the #macro.
+
+* Although, recursive call of the procedure is permitted, pay attention to the stack overflow in case of a large number of nesting calls. Here is a simple example using recursive call.
+
+
+	<%DisableCR>
+	<%CallProc=Repeat, 3, CQ CQ CQ de <%MyCall> <%MyCall> <%MyCall><%CR>>
+	<%BS> pse k...<%CR> 
+	#proc  Repeat  @N, @Text
+	<%DisableCR>
+	#define  _RepCount  <%Format=%d,@N-1>
+	#if _RepCount >= 0
+	@Text
+	<%CallProc=Repeat, _RepCount, @Text>
+	#endif
+	#endp
+
+
+* Use <%DebugProc=...> instead of <%CallProc=...> for debugging. In the TX window, <%DebugProc=...> shows how the procedure is executed.
+
+[Extended menu handler]
+~~~~~~~~~~~~~~~~~~~~~~
+A procedure can be used as a handler for the extended menu. Using the extended menu, the user can customize the MMVARI menu function. <%AddMenu=...> and <%InsertMenu=...> generate the extended menu.
+
+	<%AddMenu=Name, Caption, Procedure, Arg1, Arg2...>
+	<%InsertMenu=Name, InsPos, Caption, Procedure, Arg1, Arg2...>
+
+	Name:		Name of the menu, access key (&x), or index (1...)
+	InsPos:	Caption of the inserting point, access key (&x), or index (1...)
+	Caption:	Caption of the menu, access key (&x), or index (1...)
+	Procedure:	Name of the handler procedure
+	Arg:		Arguments to the handler procedure (can be omitted)
+
+A simple example for the extended menu is given below. These macro commands are usually defined in the OnStart event macro.
+
+	<%DisableCR>
+	#define	_Name	E&xtension
+	<%AddMenu=_Name, &CW speed..., Slider, CW speed, CWSpeed, 10, 40>
+	<%AddMenu=_Name, &Digital output level..., Slider, Digital output level, DigitalLevel, 1024, 32768, 1024>
+	<%AddMenu=_Name, ->
+	<%AddMenu=_Name, CQ DX(&1), OnCQDXClick, 1, 3, 3, 4000>
+	<%AddMenu=_Name, CQ DX(&3), OnCQDXClick, 3, 3, 3, 5000>
+
+	#proc	OnCQDXClick	@Nline, @Ncq, @Ncall, @Interval
+	<%DisableCR><%ClearTXW><%AutoClear><%TX><%RX>
+	<%RepeatText=@Nline,<%RepeatText=@Ncq,CQ DX<%SP>>de<%RepeatText=@Ncall,<%SP><%MyCall>><%CR>>
+	<%BS><%SP>pse DX k<%CR><%RepeatTX=@Interval>
+	#endp
+
+	#proc Slider @Title, @Command, @Min, @Max, @Step, @NumScales
+	<%DisableCR>
+	#macro <%Slider=@Title, <%@Command>, @Min, @Max, @Step, @NumScales>
+	#if StrMacro(<%Input$>)
+	<%@Command=<%Input$>>
+	#endif
+	#endp
+
+* When clicking on the title of the extended menu, the handler procedure below is automatically invoked. This handler procedure is optional.
+
+	On$xxxClick	xxx = Name of the menu  (e.g. On$E&xtensionClick)
+
+* If an access key is defined, all the menu commands including <%DoMenu=...>, <%DeleteMenu=...>, <%AddMenu=...> can be called by it. Care must be taken that one access key is not defined for two or more commands.
+
+ <%AddMenu=...> and <%InsertMenu=...> can be used for adding an item to the predefined menu or for replacing it with a new one. It is a good idea to use an access key or index to specify the predefined menu. Here is an example:
+
+	<%DisableCR>
+	#if !IsDefined(_fShellHelp)
+	#define  _fShellHelp  0
+	#endif
+	<%AddMenu=&E, ->
+	<%AddMenu=&E, Edit &AS(CW) macro..., OnCommand, <%EditMacro=AS(CW)>>
+	<%AddMenu=&E, Edit &OnStart event..., OnCommand, <%OnStart>>
+	<%InsertMenu=&O, &B, &Digital output level..., Slider, Digital output level, DigitalLevel, 1024, 32768, 1024>
+	<%InsertMenu=&O, &B, ->
+	<%AddMenu=&H, &P, OnShellEdit, project.txt, e, 1>
+	<%AddMenu=&H, &O, OnShellEdit, mmvari.txt, e, 1>
+	<%AddMenu=&H, &S, OnShellEdit, Samples.txt, , 3>
+	<%AddMenu=&H, &H, OnShellEdit, history.txt, e, 1>
+	<%InsertMenu=&H, &D, &Use Shell's standard editor, InvRegVal, _fShellHelp>
+	<%InsertMenu=&H, &D, ->
+
+	#proc On$&HelpClick
+	<%DisableCR><%CheckMenu=&H, &U, _fShellHelp>
+	#endp
+
+	#proc OnCommand  @Command
+	<%DisableCR>@Command
+	#endp
+
+	#proc  OnInvVal  @Value
+	<%DisableCR>
+	#DEFINE	@Value	<%Inv=@Value>
+	#endp
+
+	#proc  OnShellEdit  @File, @Prifix, @Flag
+	<%DisableCR>
+	#if IsEnglish
+	#define  _FileName  <%Folder>@Prifix@File
+	#else
+	#define  _FileName  <%Folder>@File
+	#endif
+	#if _fShellHelp
+	<%Shell=_FileName>
+	#else
+	<%EditFile=_FileName, @Flag>
+	#endif
+	#endp
+
+	#proc Slider @Title, @Command, @Min, @Max, @Step, @NumScales
+	<%DisableCR>
+	#macro <%Slider=@Title, <%@Command>, @Min, @Max, @Step, @NumScales>
+	#if StrMacro(<%Input$>)
+	<%@Command=<%Input$>>
+	#endif
+	#endp
+
+* The pop-up menus are defined as follows:
+
+	PopWATER	Menu when right click on the spectrum or waterfall window
+	PopSQ		Menu when right click on the level indicator
+	PopRXW		Menu when right click on the RX window
+	PopRX		Menu when right click on a text in the RX window
+	PopTX		Menu when right click on the TX window
+	PopPAGE		Menu when right click on the page window of the status bar
+	PopCHARSET	Menu when right click on the language selection of the status bar
+	PopCALLS	Menu when click on the button next to the CallBox
+
+* The menu item that has a sub menu cannot be overridden.
+* After inserting a menu, the index number will be changed. Using an access key would avoid this confusion.
+* Clicking on the title of the defined menu invokes the following handler procedure. This handler, however, is optional.
+
+	On$&FileClick, On$&EditClick, On$&ViewClick, On$&OptionsClick,
+	OnRadio&CommandClick, On$&HelpClick
+
+* When the pop-up menu is poped, MMVARI automatically calls the following handler procedures (they are not necessarily defined, however).
+	On$PopWATERClick, On$PopSQClick, On$PopRXWClick, On$PopRXClick,
+	On$PopTXClick, On$PopPAGEClick, On$PopCHARASETClick, On$PopCALLSClick,
+
+[Repeat block]
+~~~~~~~~~~~~~~
+Repeat block is defined as a special procedure by #repeat and #endp. The block is N times repeatedly executed. N is specified by the statement just after #repeat. In case N is 0, the block is not executed.
+
+	#repeat statement
+		|
+	#endp
+
+* In the repeat block, the repeat number "$repeat" and the counter "$counter" are implicitly defined. 
+
+	#repeat  3
+	CQ CQ CQ de <%MyCall> <%MyCall> <%MyCall> (<%Format=%d, 1 + $repeat - $counter>)
+	#endp
+
+* If the repeat block is nested, each level has independent $repeat and $counter.
+
+	#repeat  3
+	<%DisableCR>Outside=($counter/$repeat)[
+	#repeat  2
+	<%DisableCR>
+	#if $counter > 1
+	,
+	#endif
+	Inside=($counter/$repeat)
+	#endp
+	]<%CR>
+	#endp
+
+
+======================
+Sound playback
+======================
+The sound playback function allows the user to replay the latest 15/30/60-second audio data inside MMVARI. To enable this function, go the RX tab of the MMVARI setup window and check the sound playback check box. Three buttons, 60, 30, and 15, appear just under the TXOFF button at the top left corner of the main MMVARI window. Pushing one of these buttons activates the sound playback function.
+
+	60	Replay the latest 60-second sound data
+	30	Replay the latest 30-second sound data
+	15	Replay the latest 15-second sound data
+
+This function is useful for the following situations:
+- Somebody was calling me, but I could not get zero-in the signal before he stopped calling.
+- Somebody was transmitting signals, but I missed him because of the mode mismatch. 
+
+With the sound playback function, you can receive and decode the same signals as many times as you want. For example, the modes, such as MFSK, require longer time for AFC to get zero-in, and therefore you would not be able to decode the signals in short TX duration. In such a case, push 15/30/60 button to replay the received sound, and make AFC attempt to zero-in again.
+
+The slider on the right of the sound playback enable check box changes the replay speed from x1 to x20. The default speed is x5 (it takes three seconds to replay 15-second sound). The speed may be limited by the CPU speed.
+
+MMVARI constantly records the latest 60-second sound data to the memory in the PCM format. The recorded sound data of the 11025Hz sampling frequency uses approximately 1.3MB memory.
+
+
+================
+Soundcard settings
+================
+Soundcard settings are available on the MISC tab of Setup MMVARI menu.
+
+(1) Fifo - RX
+~~~~~~~~~~~~
+Increase fifo depth if the RX sound is intermittent.
+
+(2) Fifo - TX
+~~~~~~~~~~~~
+Increase fifo depth if the TX sound is intermittent. However, the deep TX fifo would result in large timing gap between typing and transmitting characters.
+
+(3) DeviceID
+~~~~~~~~~~~
+In case your PC has two or more soundcard devices, specify the DEVICE_ID, which starts with 0. "-1" means the default card to be selected.
+
+MMVARI supports the custom sound plug-in, which was originally developed for MMTTY/MMSSTV. Make sure you have mmw file in the folder where MMVARI is installed. Select your mmw file in the DeviceID drop-down list.
+
+For more information on the custom sound, refer to the EReadme.txt and EMMW.txt in the MMW.ZIP package.
+
+(4) Thread priority
+~~~~~~~~~~~~~~~~~
+If the TX sound is intermittent, try increasing the priority.
+
+(5) Input channel
+~~~~~~~~~~~~~~~~~
+Select the RX sound input source from left, right, or stereo.
+MMVARI always outputs the TX sound to both left and right.
+
+(6) Clock - RX
+~~~~~~~~~~~~~
+Specify the RX sampling frequency. MMVARI supports the following sound frequencies. The default is 11025Hz.
+
+1 - 11025Hz: Typical soundcard frequency supported by all the cards in the market.
+2 - 12000Hz: Soundcard frequency that is unlikely to have TX offset. Supported by some cards in the market.
+3 - 6000Hz: Uses smaller CPU power. Soundcard frequency supported by some cards in the market.
+	8000Hz	No particular merit. 
+	18000Hz	No particular merit. 	22050Hz	One of the standard sound frequencies. Nothing particular merit.
+	24000Hz	No particular merit.
+	44100Hz	One of the standard sound frequencies. Nothing particular merit.
+	48000Hz	For the optical connection (S/PDIF).
+
+* You can see another frequency, 11100Hz, in the drop-down list. This frequency, however, is a sort of calibrated value, and the soundcard works at 11025Hz.
+
+* 6000Hz is a good choice for a slow CPU.
+
+* In the 8000Hz and its variant mode, the spectrum scope and waterfall run slightly slower than the other modes.
+
+
+(7) Clock - TxOffset
+~~~~~~~~~~~~~~~~~~~
+Specify the TX offset with respect to the RX frequency. If your soundcard has offset between TX and RX frequencies, use this parameter as the following equation.
+
+	TX sampling frequency = RX sampling frequency + TxOffset [Hz] 
+
+
+==========================
+Clock calibration of the soundcard
+==========================
+The soundcard clock frequency for MMVARI is not so sensitive as SSTV. However, in case the TX and RX frequencies are far different, the carrier frequencies of them become far apart as a result. That should cause operation inconveniences and difficulties in the signal synchronization.
+
+1. Using MMSSTV
+~~~~~~~~~~~~~~~~~~~~~~
+For MMVARI, you can use the clock and TxOffset values derived by the calibration procedure in MMSSTV. This is the simplest way for the calibration. Make sure you have turned off the automatic slant adjustment function in MMSSTV.
+
+2. Adjust RX frequency first
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Click on Option Menu and select Calibrating the SoundCard. You will see another window popped up. Follow the instruction shows there. The calibration uses BPM standard radio wave, which can be heard in Eastern Asia. With this procedure, you can adjust the RX clock frequency only. For TX clock frequency calibration, refer to "Adjust TxOffset" below.
+
+3. Adjust TxOffset
+~~~~~~~~~~~~~~~~
+First of all, open the TX tab, select External (full-duplex) loop-back mode, and connect the input and output terminals of the soundcard. It is a simple way of settling the loop-back, but you may not have to connect them with a real wire. That is, you alternatively open the sound input setup window of Windows, and select the stereo mixer or monaural mixer from the line input.
+
+In the MMVARI main window, do the following operations.
+1) Turn NET off, AFC on, and ATC on.
+2) Clear the TX window to make idling TX signal.
+3) Push the TX button. Make sure you have turned the transceiver off!
+4) In the spectrum window, zero in to the RX signal. If your soundcard has the offset between TX and RX, you notice that TX and RX frequencies are not the same.
+
+After a while, the ATC value becomes stable. Move the mouse cursor over the ATC timing window, and look at the RxOffset value in the status bar. Subtract the value, RxOffset, displayed in the status bar from TxOffset.
+
+
+	New TxOffset = Current TxOffset - RxOffset [Hz]
+
+For example, if the current TxOffset is 0 and RxOffset is displayed -74.40, the new TxOffset will be 74.40. 
+
+
+That's all for the calibration. Put the loop-back mode from External to Internal.
+
+4. Another simple TxOffset calibration
+~~~~~~~~~~~~~~~~~~~~
+Put 0 to TxOffset and transmit the idle signal for a while. Get the ATC timing value from the receiving amateur radio station. Reverse the polarity and put it to TxOffset. It is prerequisite that the receiving station is correctly calibrated.
+
+
+================
+Naming convention of MMVARI
+================
+For the sake of convenience, MMVARI defines the names of VARICODE as follows. The <%VARITYPE> automatically refers to the definition.
+
+	VariSTD		Stardard PSK31 VARICODE (256 codes)
+	VariJA		Japanese VARICODE (12160 codes)
+	VariHL		Hangul VARICODE (24448 codes)
+	VariBV		Chinese (BV) VARICODE (24448 codes)
+	VariBY		Chinese (BY) VARICODE (24448 codes)
+
+The conventional method, which uses the standard VARICODE and sends two untranslated codes for an MBCS character, is defined as "VariSTD/JA" or "VariSTD/HL" depending on the language selected on the PC.
+
+The following table gives the modulation and <%VARITYPE> combination.
+
+	GMSK		VariJA, VariHL, VariBV, VariBY
+	FSK		VariJA, VariHL, VariBV, VariBY
+	BPSK		VariJA, VariHL, VariBV, VariBY
+	bpsk		VariSTD/JA, VariSTD/HL, VariSTD/BV, VariSTD/BY
+
+* It should be noted that <%VARITYPE> takes different values according to the language selected in the RX window. If an SBCS language is selected, it always takes "VariSTD."
+
+* In bpsk, "VariSTD/JA" is not popularized, so "Japanese" should be better. The following macro example can be used for this purpose.
+
+	RRR <%HisCall> de <%MyCall>
+	#if IsLocal
+	#if StrVARITYPE == STD/JA
+	--- Japanese ---
+	#else
+	--- <%VARITYPE> ---
+	#endif
+	#endif
+
+73, Mako JE3HHT

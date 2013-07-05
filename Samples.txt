@@ -1,0 +1,418 @@
+[Macro samples]
+
+===================== CQ menu ======================
+<%DisableCR>
+#macro <%Menu=CQ1, CQ2, CQ3>
+#if ValMenu
+#define	_cLine	<%Format=%d,<%Input$>>
+<%ClearTXW><%AutoClear><%TX><%RX>
+<%RepeatText=_cLine,<%RepeatText=3,CQ<%SP>>de<%RepeatText=3,<%SP><%MyCall>><%CR>>
+<%BS><%SP>pse
+#if IsCodeMM
+<%SP>(<%VARITYPE>)
+#endif
+<%SP>k...<%CR>
+#endif
+<%EOF>
+===================== Call menu ======================
+<%DisableCR>
+#macro <%Menu= 0x2, 0x3, 0x4, -, 1x2, 1x3, 1x4, -, 2x3, 2x4>
+#if ValMenu
+#define	_His	<%Format=%c,<%Input$>>
+#define	_My	<%Format=%d,<%Find$=x,<%Input$>>>
+<%TX><%RX>
+#if !Is1stCR
+<%CR>
+#endif
+#if IsCall
+<%RepeatText=_His,<%HisCall><%SP>>
+#endif
+de
+<%RepeatText=_My,<%SP><%MyCall>>
+<%SP>pse K<%CR>
+#endif
+<%EOF>
+===================== CW speed ======================
+<%DisableCR>
+#macro <%Slider=CW speed,<%CWSpeed>,10,30,1,10>
+#if StrMacro(<%Input$>)
+<%CWSpeed=<%Input$>>
+#endif
+<%EOF>
+===================== CW menu ======================
+<%DisableCR><%DisableTAB>
+#define	_tCode	73CU:, TU:EE, TU:, SU, EE, QRL?, QSY TU, CL:
+#macro <%Menu=&73 CU SK, &TU SK EE, T&U SK, &SU, &EE, -, QR&L? (before CQ), QS&Y, QRT, -, &Input..., -, Speed...>
+#if ValMenu
+	#define	_strCode	<%TableStr=<%Menu>,_tCode>
+	#if StrMacro(<%String=_strCode>)
+		<%TX><%RX><%CWID=_strCode><%EOF>
+	#elseif StrMacro(<%Input$>) >> Input...
+		#if StrMacro(<%Input=CW text (@ AS  : SK  ; AR  = BT  ] KN), <%MyCall>>)
+			<%TX><%RX><%CWID=<%Input$>><%EOF>
+		#endif
+	#elseif StrMacro(<%Input$>) >> Speed...
+		<%Slider=CW speed, <%CWSpeed>,10,40><%CWSpeed=<%Input$>>
+	#endif
+#endif
+<%EOF>
+===================== How to use <%CallProc=...> ======================
+<%DisableCR><%DisableTAB>
+#define	_tTitle	AFC width (Hz), AFC level (dB), CW speed, Digital output level, Play back speed, Minimum size of the macro buffer
+#define	_tCommand	AFCWidth, AFCLevel, CWSpeed, DigitalLevel, PlayBackSpeed, BuffSize
+#define	_tRange	"0,200,5", "6,20", "10,40", "1024,32768,1024", "1,20", "1024,16384,1024"
+#macro <%Menu=_tTitle>
+#if ValMenu
+	#define	_strArg	<%TableStr=<%Menu>,_tTitle>,<%TableStr=<%Menu>,_tCommand>,<%TableStr=<%Menu>,_tRange>
+	<%CallProc=Slider, _strArg>
+#endif
+
+#proc Slider @Title, @Command, @Min, @Max, @Step, @NumScales
+<%DisableCR>
+#macro <%Slider=@Title, <%@Command>, @Min, @Max, @Step, @NumScales>
+#if StrMacro(<%Input$>)
+<%@Command=<%Input$>>
+#endif
+#endp
+===================== How to use <%VALTIME> ======================
+<%DisableCR><%CallProc=DateTime, <%LPTIME>>
+
+#proc DateTime	@Passing
+<%DisableCR>
+#define	_Now	@Passing
+#define	_tMonth	January, February, March, April, May, June, July, August, September, October, November, December
+#define	_tWeek	Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+#define	_iDay	<%Floor=_Now / (24*60*60)>
+#define	_iWeek	<%Format=%d, _iDay % 7 + 1>
+<%VALTIME=year, _Now><%SP><%TableStr=<%VALTIME=month, _Now>, _tMonth><%SP>
+<%VALTIME=day, _Now><%SP><%SP><%VALTIME=hour, _Now>:<%VALTIME=minute, _Now>:
+<%VALTIME=second, _Now><%SP>(<%TableStr=_iWeek, _tWeek>)
+#endp
+===================== To capture callsign ======================
+<%DisableCR><%DisableTAB>
+#if IsCall
+	<%WaterMsg=3,<%EntityName=<%HisCall>>/<%Continent=<%HisCall>>>
+	<%ClearTXW>RRR, <%HisCall> <%HisCall> de <%MyCall> <%MyCall><%CR>
+	#if IsCodeMM
+	--- (<%VARITYPE>) ---<%CR>
+	#endif
+	<%HisGreetings=2> <%DearName>, Thank you for your call...<%CR>
+#else
+	<%WaterMsg=3,Waiting...>
+	<%HisCall=<%Capture>><%Repeat=1000>
+#endif
+===================== CQ repeating with auto stop ======================
+#define	_tCQ	CQ1, CQ2, CQ3
+#define	_tTime	3sec, 4sec, 5sec
+<%DisableCR><%DisableTAB>
+#if !IsRepeat
+	#if IsCall
+		#macro <%Message=Callsign already exists in the Call box..., Clear the callsign and run this macro again>
+		#exit
+	#endif
+	#if !IsDefined(_Interval)
+		#define	_Interval	3
+	#endif
+	#define	_iTemp	<%Table=<%String=_Interval>sec, _tTime>
+	#define	_strMenu	0, <%String=_tCQ>, -, _iTemp, <%String=_tTime>
+	#macro <%MenuB=_strMenu>
+#endif
+#if !IsCall
+	#if StrMacro(<%Input$>) >> CQ
+		#define	_cLine	<%Format=%d,<%Input$>>
+		#if !IsSQ
+			<%ClearTXW><%AutoClear><%TX><%RX>
+			<%RepeatText=_cLine,<%RepeatText=3,CQ<%SP>>de<%RepeatText=3,<%SP><%MyCall>><%CR>>
+			<%BS><%SP>pse
+			#if IsCodeMM
+				<%SP>(<%VARITYPE>)
+			#endif
+			<%SP>k...<%CR>
+			<%RepeatTX=<%Format=%d,_Interval*1000>>
+		#else
+			<%HisCall=<%Capture>><%Repeat=1000>
+		#endif
+	#elseif StrMacro(<%Input$>) >> sec
+		#define	_Interval	<%Format=%d,<%Input$>>
+	#endif
+#else
+	#macro <%WaterMsg=3,<%EntityName=<%HisCall>>/<%Continent=<%HisCall>>>
+	<%ClearTXW>RRR, <%HisCall> <%HisCall> de <%MyCall> <%MyCall><%CR>
+	#if IsCodeMM
+		--- (<%VARITYPE>) ---<%CR>
+	#endif
+	<%HisGreetings=2> <%DearName>, Thank you for your call...<%CR>
+#endif
+<%EOF>
+===================== Sound channel menu ======================
+<%DisableCR>
+#define	_tCH	MONO,LEFT,RIGHT
+#define	_strCH	<%TableStr=1,<%SoundDevice>>
+#define	_iCH	<%Table=_strCH,_tCH>
+#macro <%MenuB=_iCH,_tCH>
+#if ValMenu
+<%SoundDevice=<%Input$>>
+#endif
+<%EOF>
+===================== Digtal output level ======================
+<%DisableCR>
+#define	_tLevel	8192,16384,24576,32768
+#define	_tLabel	Low, Mid(Default), High, Maximum
+#define	_iLevel	<%Table=<%DigitalLevel>,_tLevel>
+#macro <%MenuB=_iLevel,_tLabel>
+#if ValMenu
+<%DigitalLevel=<%TableStr=<%Menu>,_tLevel>>
+#endif
+<%EOF>
+===================== Digital output level ======================
+<%DisableCR>
+#macro <%Slider=Digital output level, <%DigitalLevel>,1024,32768,1024>
+#if StrMacro(<%Input$>)
+<%DigitalLevel=<%Input$>>
+#endif
+<%EOF>
+===================== Windows shut down ======================
+<%DisableCR>
+#if <%YesNo=Windows will be shut down, are you sure?> == 6
+<%ShutDown>
+#endif
+<%EOF>
+===================== Play back menu ======================
+<%DisableCR><%DisableTAB>
+#define	_tButtons	"60-30-15<%TAB>(Default)","60-20-10","60-40-15"
+#define	_tReplays	Replay latest 10sec, Replay latest 15sec, Replay latest 20sec, Replay latest 30sec
+#define	_strMenu	OFF, ON, -, 0, <%String=_tButtons>, -, 0, <%String=_tReplays>
+#define	_iSwitch	<%Format=%d,<%Cond=IsPlayBack>+1>
+#if IsPlayBack
+#macro <%MenuB=_iSwitch, _strMenu>
+#else
+#macro <%MenuB=_iSwitch, OFF, ON>
+#endif
+#if ValMenu
+	#if StrMacro(<%Input$>) >> -
+		#define	_strButtons	<%Format=%.2s,<%Input$>>,<%Format=%.2s,<%Skip$=3,<%Input$>>>,<%Format=%.2s,<%Skip$=6,<%Input$>>>
+		#macro <%PlayBackButtons=_strButtons>
+	#elseif StrMacro(<%Input$>) >> Replay
+		#define	_strTime	<%Format=%d,<%Input$>>
+		#macro <%PlayBack=_strTime>
+	#else
+		#macro <%PlayBack=<%Input$>>
+	#endif
+#endif
+<%EOF>
+===================== RYRYRY ======================
+<%RepeatText=2,<%RepeatText=33,RY><%CR><%vvv><%CR>>
+===================== rtty UOS ======================
+<%DisableCR>
+#define	_iMenu	<%Format=%d,<%Cond=IsUOS>+1>
+#macro <%MenuB=_iMenu, OFF, ON>
+#if ValMenu
+<%UOS=<%Input$>>
+#endif
+===================== rtty Diddle ======================
+<%DisableCR>
+#define	_tDiddle	BLK,LTR
+#define	_iMenu	<%Table=<%DIDDLE>,_tDiddle>
+#macro <%MenuB=_iMenu, _tDiddle>
+#if ValMenu
+<%DIDDLE=<%Input$>>
+#endif
+===================== rtty wait ======================
+<%DisableCR>
+#macro <%Slider=RTTY Wait,<%RTTYWaitC>,0,100>
+#if StrMacro(<%Input$>)
+<%RTTYWaitC=<%Input$>><%RTTYWaitD=<%Input$>>
+#endif
+<%EOF>
+===================== Rig control (Rig selection) ======================
+<%DisableCR>
+#define	_tRigs	YAESU-VU, YAESU-HF, CI-V, CI-V4, KENWOOD, JST245
+#define	_iRig	<%Table=_Rig, _tRigs>
+#macro <%MenuB=_iRig, _tRigs>
+#if ValMenu
+#DEFINE	_Rig	<%Format=%s,<%Input$>>
+#endif
+<%EOF>
+===================== Rig control (FREQ menu) ======================
+<%DisableCR>
+#if !IsDefined(_Rig)
+#define	_Rig	CI-V
+#endif
+#macro <%Menu=7028.5,10141.5,14072.5,18102.5,21072.5,28072.5>
+#if ValMenu
+#if IsRadioLSB
+#macro <%RadioKHz=_Rig,<%Input$>+<%RxCarrier>*0.001>
+#else
+#macro <%RadioKHz=_Rig,<%Input$>-<%RxCarrier>*0.001>
+#endif
+#endif
+<%EOF>
+===================== Rig control (Mode menu) ======================
+<%DisableCR>
+#if !IsDefined(_Rig)
+#define	_Rig	CI-V
+#endif
+#define	_t_Mode	LSB,USB,CW,AM,FM,RTTY,PACKET
+#macro <%MenuB="<%Table=<%RadioMode>,_t_Mode>",_t_Mode>
+#if ValMenu
+#macro <%RadioMode=_Rig,<%Input$>>
+#endif
+<%EOF>
+===================== Rig control (Tone menu) ======================
+<%DisableCR>
+#if !IsDefined(_Rig)
+#define	_Rig	CI-V
+#endif
+#macro <%Menu=1000,1200,1500,1750,2000>
+#if ValMenu
+#define	_Tone	<%Input$>
+#define	_OffKHz	<%Format=%f,(<%RxCarrier>-_Tone)*0.001>
+#if IsRadioLSB
+#macro <%RadioKHz=_Rig,<%RadioKHz>-_OffKHz>
+#else
+#macro <%RadioKHz=_Rig,<%RadioKHz>+_OffKHz>
+#endif
+#macro <%RxCarrier=_Tone>
+#endif
+<%EOF>
+===================== Edit event macro ======================
+<%DisableCR>
+#macro <%Menu=<%Events>>
+#if ValMenu
+#define	_strArg	<%Input$>
+<%CallProc=EditEvent, _strArg>
+#endif
+
+#proc EditEvent  @Event
+<%DisableCR>
+<%@Event>
+#endp
+===================== Setup OnTimer menu ======================
+<%DisableCR>
+#macro <%Menu=AFC frequency, Metric(MFSK), RadioMode, WaterNoise, S/N (Average and Peak), UTC time, Local time, QSO time, Memory free, -, Stop>
+#if ValMenu == 1
+#macro <%OnTimer=<%WaterMsg=4,<%AFCFrequency>Hz>>
+#elseif ValMenu == 2
+#macro <%OnTimer=<%WaterMsg=4,<%MetricMFSK>>>
+#elseif ValMenu == 3
+#macro <%OnTimer=<%WaterMsg=4,<%RadioMode>>>
+#elseif ValMenu == 4
+#macro <%OnTimer=<%WaterMsg=4,<%WaterNoise>dB>>
+#elseif ValMenu == 5
+#macro <%OnTimer=<%WaterMsg=4,S/N=<%AverageLevel>/<%PeakLevel>dB>>
+#elseif ValMenu == 6
+#macro <%OnTimer=<%WaterMsg=4,<%UTIME>z>>
+#elseif ValMenu == 7
+#macro <%OnTimer=<%WaterMsg=4,<%LTIME>>>
+#elseif ValMenu == 8
+#macro <%OnTimer=<%DisableCR>\r\n#if IsQSO\r\n#define\t_QT\t<%Format=%u,<%PTIME>-<%QPTIME>>\r\n<%WaterMsg=3,<%VALTIME=hour,_QT>:<%VALTIME=minute,_QT>:<%VALTIME=second,_QT>>\r\n#endif>
+#elseif ValMenu == 9
+#macro <%OnTimer=<%WaterMsg=4,<%Format=%d,100-<%TableStr=1,<%Memory>>>% (<%TableStr=3,<%Memory>>MB)>>
+#elseif ValMenu == 10
+#macro <%OnTimer=>
+#endif
+<%EOF>
+===================== Create extension menu (Write to OnStart) ======================
+<%DisableCR>
+#define	_Name	E&X
+<%AddMenu=_Name, &CW speed..., Slider, CW speed, CWSpeed, 10, 40>
+<%AddMenu=_Name, &Digital output level..., Slider, Digital output level, DigitalLevel, 1024, 32768, 1024>
+<%AddMenu=_Name, ->
+<%AddMenu=_Name, CQ DX(&1), OnCQDXClick, 1, 3, 3>
+<%AddMenu=_Name, CQ DX(&3), OnCQDXClick, 3, 3, 3>
+
+#proc	OnCQDXClick	@NLINE, @NCQ, @NCALL
+<%DisableCR><%ClearTXW><%AutoClear><%TX><%RX>
+<%RepeatText=@NLINE,<%RepeatText=@NCQ,CQ DX<%SP>>de<%RepeatText=@NCALL,<%SP><%MyCall>><%CR>>
+<%BS><%SP>pse DX k<%CR>
+#endp
+
+#proc Slider @Title, @Command, @Min, @Max, @Step, @NumScales
+<%DisableCR>
+#macro <%Slider=@Title, <%@Command>, @Min, @Max, @Step, @NumScales>
+#if StrMacro(<%Input$>)
+<%@Command=<%Input$>>
+#endif
+#endp
+===================== Override builtin menus (Write to OnStart) ======================
+<%DisableCR>
+#if !IsDefined(_fShellHelp)
+#define  _fShellHelp  0
+#endif
+<%AddMenu=&E, ->
+<%AddMenu=&E, Edit &AS(CW) macro..., OnCommand, <%EditMacro=AS(CW)>>
+<%AddMenu=&E, Edit &OnStart event..., OnCommand, <%OnStart>>
+<%InsertMenu=&O, &B, &Digital output level..., Slider, Digital output level, DigitalLevel, 1024, 32768, 1024>
+<%InsertMenu=&O, &B, ->
+<%AddMenu=&H, &P, OnShellEdit, project.txt, e, 1>
+<%AddMenu=&H, &O, OnShellEdit, mmvari.txt, e, 1>
+<%AddMenu=&H, &S, OnShellEdit, Samples.txt, , 3>
+<%AddMenu=&H, &H, OnShellEdit, history.txt, e, 1>
+<%InsertMenu=&H, &D, &Use Shell-standard editor, InvRegVal, _fShellHelp>
+<%InsertMenu=&H, &D, ->
+
+#proc On$&HelpClick
+<%DisableCR><%CheckMenu=&H, &U, _fShellHelp>
+#endp
+
+#proc OnCommand  @Command
+<%DisableCR>@Command
+#endp
+
+#proc  OnInvVal  @Value
+<%DisableCR>
+#DEFINE	@Value	<%Inv=@Value>
+#endp
+
+#proc  OnShellEdit  @File, @Prifix, @Flag
+<%DisableCR>
+#if IsEnglish
+#define  _FileName  <%Folder>@Prifix@File
+#else
+#define  _FileName  <%Folder>@File
+#endif
+#if _fShellHelp
+<%Shell=_FileName>
+#else
+<%EditFile=_FileName, @Flag>
+#endif
+#endp
+
+#proc Slider @Title, @Command, @Min, @Max, @Step, @NumScales
+<%DisableCR>
+#macro <%Slider=@Title, <%@Command>, @Min, @Max, @Step, @NumScales>
+#if StrMacro(<%Input$>)
+<%@Command=<%Input$>>
+#endif
+#endp
+===================== Set shortcut keys (Write to OnStart) ======================
+<%DisableCR>
+<%ShortCut=&V, &C, &1, Ctrl+1>
+<%ShortCut=&V, &C, &2, Ctrl+2>
+<%ShortCut=&V, &C, &3, Ctrl+3>
+<%ShortCut=&V, &C, &4, Ctrl+4>
+<%ShortCut=&V, &C, &5, Ctrl+5>
+<%ShortCut=&V, &C, &6, Ctrl+6>
+<%ShortCut=&V, &C, &7, Ctrl+7>
+<%ShortCut=&V, &C, &8, Ctrl+8>
+<%ShortCut=&O, &M, Ctrl+S>
+===================== Create hid menu for shortcut keys (Write to OnStart) ======================
+<%DisableCR>
+#define  _NameHide  Hide
+<%AddMenu=_NameHide, &RefRXW, OnCommand, <%RefRXW>>
+<%AddMenu=_NameHide, &QSO button, OnCommand, <%DoButton=QSO>>
+<%AddMenu=_NameHide, &Data button, OnCommand, <%DoButton=Data>>
+<%AddMenu=_NameHide, &Find button, OnCommand, <%DoButton=Find>>
+<%ShortCut=_NameHide, &R, Ctrl+R>
+<%ShortCut=_NameHide, &Q, Ctrl+Q>
+<%ShortCut=_NameHide, &D, Ctrl+D>
+<%ShortCut=_NameHide, &F, Ctrl+F>
+<%ShowMenu=_NameHide, OFF>
+
+#proc OnCommand  @Command
+<%DisableCR>@Command
+#endp
+===================== Hide builtin menus ======================
+<%DisableCR>
+<%ShowMenu=&F, ONOFF><%ShowMenu=&E, ONOFF><%ShowMenu=&V, ONOFF>
+<%ShowMenu=&O, ONOFF><%ShowMenu=&H, ONOFF>

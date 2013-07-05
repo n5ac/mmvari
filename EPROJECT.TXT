@@ -1,0 +1,232 @@
+MMVARI project
+		January 2, 2004 JE3HHT Makoto Mori
+		Translated into English by JA7UDE Nobuyuki Oba
+
+[Preface]
+
+I like having QSOs in Japanese simply because I am Japanese. Even in PSK31, I prefer using Japanese characters for domestic QSOs. As well known, PSK31 is a great means of communication, but I have been aware of an exposure in manipulating Japanese characters; more precisely, in manipulating Eastern Asia languages including Hangul and Chinese. The objective of this project is to give a solution to the exposure.
+
+
+[Character code and structure]
+
+Eastern Asia languages, such as Japanese, Hangul, and Chinese, have many characters, which are impossible to be fit into the 8-bit code space. The current PSK31 implementation uses MultiByte Character Set (MBCS) to accommodate this requirement. To send one MBCS character, PSK31 sends two bytes, and thus it suffers from a couple of disadvantages below:
+
+(1)	Slow
+(2)	Once the phase is unlocked, the output becomes unrecoverable garbage for a while.
+(3)	Characters with different byte lengths are mixed. It makes the backspace operation confusing.
+
+Let us see these problems one by one.
+
+(1)	It is true that Easter Asia languages have many characters, but this is not only the reason they are not suited for PSK31. The first byte of MBCS is assigned to the range between $81 and $FE. In addition, Hiragana, which appears in Japanese very frequently, is assigned to $9F-$F2. In PSK31's VARICODE, characters in those ranges are assigned to lengthy codes. To make matters worse, a GAP (00) is added between two VARICODE characters that represent one MBCS character. This results in 24 bits for one character. In fact, PSK31 QSO in Japanese is too slow to make smooth communication. It sometimes is slower than CW using Japanese characters.
+
+(2)	Even when only one character is missing in the path, the receiver often outputs a string of garbled characters because the receiver misunderstands the delimiting position of MBCS characters. The first byte and second byte of MBCS share some range of codes, so that the receiver cannot always distinguish whether the received code is the first or second byte only from the range the received byte belongs to. Fortunately, $A0-$DF are not used for the first byte in the Japanese code set, and therefore can be used for phase detection. However, Hangul and Chinese code sets use more number of character codes that are used in the first and second bytes.
+
+(3)	From the application perspective, one-byte and two-byte characters are seen mixed in the transmission. This makes the backspace (BS) operation confusing. Japanese compliant PSK31 programs, such as HALPSK and WINPSK/J, use a crafty trick to solve this problem, but it is not the best approach. The most effective solution is to increase the code space so that each character has a unique code. Theoretically, VARICODE used in PSK31 can have as many codes as desired.
+
+To support only MBCS, the program has to handle the characters in $00-$FF and $8140-$FEFF, and does not have to handle characters outside of these ranges. The second byte of MBCS is equal to or greater than $40. In Japanese, there is no character assigned in $A040-$DFFF. In Hangul and Chinese, however, some characters are assigned in this range.
+
+Someone may ask "how about UNICODE?" On UNICODE, a unique code is assigned to a character irrespective of the code set, but all the codes from $0000 to $FFFF must be handled. In real QSOs, we do not use Japanese and Chinese mixed. Hangul characters are assigned in the later portion of the UNICODE, and they tend to be longer in code bit length. UNICODE is not supported in all Windows. For these reasons, I dropped the UNICODE support.
+
+How about JIS code? It does not take account of any languages other than Japanese, so it should not be suited for amateur radio communication.
+
+To convert MBCS in $00-$FF and $8140-$FEFF to VARICODE, we need the continuous index values of $0000-$5F7F. VARICODE is based on a rule so that every code starts with bit 1 and ends with bit 1, and has no series of two or more 0s. According to this rule, the index can be defined in the table show below. With this assignment, we can use divide & conquer algorithm to convert the VARICODE to index.
+
+Index	VARICODE
+$0000	1
+$0001	11
+$0002	101
+$0003	111
+$0004	1011
+$0005	1101
+$0006	1111
+$0007	10101
+$0008	10111
+$0009	11011
+$000A	11101
+$000B	11111
+  :	  :
+$00FF	101101011011
+  :	  :
+$5F7F	110111111111101101101
+
+Care should be taken that if the index is directly assigned to the code set, not frequently used characters are assigned to short codes, and would result in inefficient coding. ASCII characters in $0000-$007F are assigned to PSK31 codes by optimizing the code length with respect to the frequency in use of characters. Let us use the PSK31 code for this range ($0000-$0007F) for compatibility. 
+
+Well, let's see the frequency of Japanese characters from the MBCS viewpoint. The table below shows the frequency of the first byte in several documents I wrote.
+
+	$81 : 6.33%	$89 : 0.95%	$91 : 2.44%	$99 : 0.00%
+	$82 : 51.5%	$8A : 1.68%	$92 : 2.12%	$9A : 0.00%
+	$83 : 8.99%	$8B : 0.54%	$93 : 2.93%	$9B : 0.00%
+	$84 : 0.00%	$8C : 1.79%	$94 : 1.74%	$9C : 0.00%
+	$85 : 0.00%	$8D : 2.66%	$95 : 4.51%	$9D : 0.00%
+	$86 : 0.00%	$8E : 3.75%	$96 : 1.22%	$9E : 0.00%
+	$87 : 0.00%	$8F : 1.47%	$97 : 1.38%	$9F : 0.00%
+	$88 : 1.68%	$90 : 2.04%	$98 : 0.24%	
+
+	$E0 : 0.00%	$E8 : 0.00%	$F0 : 0.00%	$F8 : 0.00%
+	$E1 : 0.00%	$E9 : 0.00%	$F1 : 0.00%	$F9 : 0.00%
+	$E2 : 0.00%	$EA : 0.00%	$F2 : 0.00%	$FA : 0.00%
+	$E3 : 0.00%	$EB : 0.00%	$F3 : 0.00%	$FB : 0.00%
+	$E4 : 0.00%	$EC : 0.00%	$F4 : 0.00%	$FC : 0.00%
+	$E5 : 0.00%	$ED : 0.00%	$F5 : 0.00%	$FD : 0.00%
+	$E6 : 0.00%	$EE : 0.00%	$F6 : 0.00%	$FE : 0.00%
+	$E7 : 0.00%	$EF : 0.00%	$F7 : 0.00%	
+
+The table shows that the former part of the codes has larger frequency values. The latter part, which is mapped to complicated Kanji characters, has smaller frequency values. Let's get in more details. $82 has significantly high frequency, that is, over 50%. This is the code for Japanese Hiragana. Spoken Japanese language is said to be having over 70% Hiragana. This implies that assigning short codes to Hiragana improves the communication efficiency. In amateur radio conversation, Katakana is also often being used, and it is a good idea to assign short code to them as well as Hiragana.
+
+In MBCS, Hiragana is defined in the range of $829F-$82F2, which correspond to $021F-$0272 in the index. If this range is directly mapped to VARICODE, the bit length of each code becomes 15 to 16 bits including GAP. However, if it is mapped to $0080-$00D3, the bit length is shortened to 12 or 13 bits. Katakana is mapped to $0280-$02D6 in the index ($8340-$8396 in MBCS), so let us assign Katakana to $00D4-$012A.
+
+Another point we must consider in the code mapping is the effect to MBCS languages other than Japanese. My quick research shows that $0081-$00FE has no characters assigned (defined as the first byte), and therefore this range should cause no problem. Characters in $0100-$012A are defined in Hangul and Chinese, but I do not know the frequency of them. In addition, non-MBCS language other than English might have characters assigned to this range. For these regions, it is a good idea to perform this translation by referring to the font set in the receiving side. In addition, since the translation scheme must be changed according to font sets, let Japanese characters in range $E040-$FEFF be translated into $A040-$BEFF, which has no Japanese characters assigned. The frequency of characters in this range is not so high, but this translation gives slightly better coding efficiency. In the index, $4840-$5F7F is translated into $1840-$2F7F. 
+
+
+Let us summarize the translation and mapping scheme here.
+
+	$0000-$007F	Same as PSK31 translation
+	$0080-$00D3	Translated to $021F-$0272 if Japanese font set
+	$00D4-$012A	Translated to $0280-$02D6 if Japanese font set
+	$012B-$021E	No translation, as is.
+	$021F-$0272	Translated to $0080-$00D3 if Japanese font set
+	$0273-$027F	No translation, as is.
+	$0280-$02D6	Translated to $00D4-$012A if Japanese font set
+	$02D7-$183F	No translation, as is.
+	$1840-$2F7F	Translated to $4840-$5F7F if Japanese font set
+	$2F80-$483F	No translation, as is.
+	$4840-$5F7F	Translated to $1840-$2F7F if Japanese font set
+
+For instance, the longest code made by using this translation scheme is 
+	$5F7F	110111111111101101101	(21Bits)
+The last Japanese Character is
+	$2F7F	10110101111111101111 	(20Bits)
+
+
+
+[Modulation]
+
+In Japan, all the PSK31 QSOs using Japanese characters concatenates two VARICODEs to send one MBCS character. If the VARICODE shown above is used, the compatibility with existing PSK31 programs will be lost.
+
+For this reason, I have decided not to use PSK31, but to make use of GMSK (BT=1.0) as an experimental modulation. GMSK is a sort of FSK, but it also is a brother of PSK in a sense. The sound of GMSK is similar to that of PSK31, but has different spectrum, with which the user can distinguish between them. Theoretically, GMSK have no amplitude component, and therefore does not require the linearity of the transmitter (isn't  this FB?).
+
+Like PSK31, MMVARI sends 0 by reverting the symbol and 1 by keeping the symbol. With this coding, the user does not have to take care of USB/LSB heterodyne. The detail of GMSK is beyond scope of this project. Please refer to other books.
+
+
+[Experimental program]
+
+I made a PC soundcard program, MMVARI, to implement the proposed scheme. Since the objective of this project is new VARICODE experimentation, MMVARI are:
+
+1) Implementing only basic functions for standard QSO.
+2) Providing Japanese menu only, but can be used in any MBCS languages. Non-MBCS languages, such as English, are out of scope of this project. 
+
+I would like to see the feasibility first, and after then improve the engine and cosmetics.
+
+
+[Appendix]
+
+An example C code for the index translation
+
+static int SwapHiragana(int index)
+{
+	if( index <= 0x00d3 ){					// $80-$D3
+		index += 0x21f - 0x0080;	// $80-$D3 to Hiragana
+	}
+	else if( index <= 0x12a ){					// $D4-$12A
+		index += 0x280 - 0x00d4;	// $D4-$12A to Katakana
+	}
+	else if( (index >= 0x021f) && (index <= 0x0272) ){	// Hiragana
+		index -= 0x21f - 0x0080;	// Hiragana to $80-$D3
+	}
+	else if( (index >= 0x0280) && (index <= 0x02d6) ){	// Katakana
+		index -= 0x280 - 0x00d4;	// Katakana to $D4-$12A
+	}
+	else if( (index >= 0x1840) && (index <= 0x2f7f) ){
+		index += 0x4840 - 0x1840;
+	}
+	else if( (index >= 0x4840) && (index <= 0x5f7f) ){
+		index -= 0x4840 - 0x1840;
+	}
+}
+
+UINT Index2Mbc(int index, BOOL fJA)
+{
+const BYTE _tIndex2Ascii[]={
+	0x20,0x65,0x74,0x6F,0x61,0x69,0x6E,0x72,	/*00*/
+	0x73,0x6C,0x0A,0x0D,0x68,0x64,0x63,0x2D,	/*08*/
+	0x75,0x6D,0x66,0x70,0x3D,0x2E,0x67,0x79,	/*10*/
+	0x62,0x77,0x54,0x53,0x2C,0x45,0x76,0x41,	/*18*/
+	0x49,0x4F,0x43,0x52,0x44,0x30,0x4D,0x31,	/*20*/
+	0x6B,0x50,0x4C,0x46,0x4E,0x78,0x42,0x32,	/*28*/
+	0x09,0x3A,0x29,0x28,0x47,0x33,0x48,0x55,	/*30*/
+	0x35,0x57,0x22,0x36,0x5F,0x2A,0x58,0x34,	/*38*/
+	0x59,0x4B,0x27,0x38,0x37,0x2F,0x56,0x39,	/*40*/
+	0x7C,0x3B,0x71,0x7A,0x3E,0x24,0x51,0x2B,	/*48*/
+	0x6A,0x3C,0x5C,0x23,0x5B,0x5D,0x4A,0x21,	/*50*/
+	0x00,0x5A,0x3F,0x7D,0x7B,0x26,0x40,0x5E,	/*58*/
+	0x25,0x7E,0x01,0x0C,0x60,0x04,0x02,0x06,	/*60*/
+	0x11,0x10,0x1E,0x07,0x08,0x1B,0x17,0x14,	/*68*/
+	0x1C,0x05,0x15,0x16,0x0B,0x0E,0x03,0x18,	/*70*/
+	0x19,0x1F,0x0F,0x12,0x13,0x7F,0x1A,0x1D,	/*78*/
+};
+
+	if( index <= 0x007f ){
+		index = _tIndex2Ascii[index];
+	}
+	else if( fJA ){
+		index = SwapHiragana(index);
+	}
+
+	UINT mbc;
+	int m, b;
+	if( index >= 0x0100 ){
+		index -= 0x0100;
+		m = index % 192;
+		b = index / 192;
+		mbc = 0x8140 + m + (b * 256);
+	}
+	else {
+		mbc = index;
+	}
+	return mbc;
+}
+
+int Mbc2Index(UINT mbc, BOOL fJA)
+{
+const BYTE _tAscii2Index[]={
+	0x58,0x62,0x66,0x76,0x65,0x71,0x67,0x6B,	/*00*/
+	0x6C,0x30,0x0A,0x74,0x63,0x0B,0x75,0x7A,	/*08*/
+	0x69,0x68,0x7B,0x7C,0x6F,0x72,0x73,0x6E,	/*10*/
+	0x77,0x78,0x7E,0x6D,0x70,0x7F,0x6A,0x79,	/*18*/
+	0x00,0x57,0x3A,0x53,0x4D,0x60,0x5D,0x42,	/*20*/
+	0x33,0x32,0x3D,0x4F,0x1C,0x0F,0x15,0x45,	/*28*/
+	0x25,0x27,0x2F,0x35,0x3F,0x38,0x3B,0x44,	/*30*/
+	0x43,0x47,0x31,0x49,0x51,0x14,0x4C,0x5A,	/*38*/
+	0x5E,0x1F,0x2E,0x22,0x24,0x1D,0x2B,0x34,	/*40*/
+	0x36,0x20,0x56,0x41,0x2A,0x26,0x2C,0x21,	/*48*/
+	0x29,0x4E,0x23,0x1B,0x1A,0x37,0x46,0x39,	/*50*/
+	0x3E,0x40,0x59,0x54,0x52,0x55,0x5F,0x3C,	/*58*/
+	0x64,0x04,0x18,0x0E,0x0D,0x01,0x12,0x16,	/*60*/
+	0x0C,0x05,0x50,0x28,0x09,0x11,0x06,0x03,	/*68*/
+	0x13,0x4A,0x07,0x08,0x02,0x10,0x1E,0x19,	/*70*/
+	0x2D,0x17,0x4B,0x5C,0x48,0x5B,0x61,0x7D,	/*78*/
+};
+	int index, m, b;
+	if( mbc >= 0x8100 ){
+		if( (mbc & 0x00ff) >= 0x0040 ){
+			mbc -= 0x8100;
+			m = mbc % 256;
+			b = mbc / 256;
+			index = 0x100 - 0x40 + m + (b * 192);
+		}
+		else {
+			return -1;	/* error */
+		}
+	}
+	else {
+		index = mbc;
+	}
+	if( index <= 0x007f ){
+		index = _tAscii2Index[index];
+	}
+	else if( fJA ){
+		index = SwapHiragana(index);
+	}
+	return index;
+}
+

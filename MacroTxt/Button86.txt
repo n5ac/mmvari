@@ -1,0 +1,12 @@
+<%DisableCR>
+<%CallProc=Repeat, 3, CQ CQ CQ de <%MyCall> <%MyCall> <%MyCall><%CR>>
+<%BS> pse k...<%CR>
+
+#proc  Repeat  @N, @Text
+<%DisableCR>
+#define  _RepCount  <%Format=%d,@N-1>
+#if _RepCount >= 0
+@Text
+<%CallProc=Repeat, _RepCount, @Text>
+#endif
+#endp

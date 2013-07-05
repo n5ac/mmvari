@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.05.03"/>
+    <PROJECT value="MMVARI.exe"/>
+    <OBJFILES value="MMVARI.obj mfsk.obj CLX.obj DSP.obj Main.obj Wave.obj Fft.obj ComLib.obj 
+      Dump.obj MacEdit.obj FreqDisp.obj Comm.obj Option.obj MacroKey.obj 
+      FEdit.obj VerDsp.obj CodeVw.obj InputWin.obj PlayDlg.obj LogSet.obj 
+      LogFile.obj Loglink.obj LogList.obj MMLink.obj LogConv.obj country.obj 
+      Qsodlg.obj Mmcg.obj MmcgDlg.obj RadioSet.obj cradio.obj RxView.obj 
+      ClockAdj.obj TrackDlg.obj Test.obj Hamlog5.obj TH5Len.obj RMenuDlg.obj"/>
+    <RESFILES value="mmvari.res"/>
+    <IDLFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) Main.dfm MacEdit.dfm FreqDisp.dfm Option.dfm MacroKey.dfm 
+      FEdit.dfm VerDsp.dfm CodeVw.dfm InputWin.dfm PlayDlg.dfm LogSet.dfm 
+      LogList.dfm Qsodlg.dfm MmcgDlg.dfm RadioSet.dfm RxView.dfm ClockAdj.dfm 
+      TrackDlg.dfm Test.dfm TH5Len.dfm RMenuDlg.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="vcl50.lib"/>
+    <SPARELIBS value="vcl50.lib"/>
+    <PACKAGES value="vclx50.bpi vcl50.bpi vcldb50.bpi vclbde50.bpi vcldbx50.bpi bcbsmp50.bpi 
+      dclocx50.bpi qrpt50.bpi teeui50.bpi vclsmp50.bpi teedb50.bpi tee50.bpi 
+      ibsmp50.bpi nmfast50.bpi inetdb50.bpi inet50.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value=""/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="MMVARI.cpp"/>
+    <INCLUDEPATH value="..\vsais10;res;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..\vsais10;res;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par -w-8027 -w-8026"/>
+    <WARNOPTSTR value=""/>
+  </MACROS>
+  <OPTIONS>
+    <CFLAG1 value="-O2 -H=c:\PROGRA~2\borland\CBUILD~1\lib\vcl35.csm -Hc -Vx -Ve -X- -a8 -b- 
+      -d -k- -vi -c -tW -Tkh30000 -tWM"/>
+    <CFLAG2 value=""/>
+    <CFLAG3 value=""/>
+    <PFLAGS value="-$YD -$L- -$D- -v -M -JPHNE"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <IFLAGS value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+  </LINKER>
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1041
+CodePage=932
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>

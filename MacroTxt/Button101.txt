@@ -1,0 +1,23 @@
+<%DisableCR><%DisableTAB>
+#define	_tButtons	"60-30-15<%TAB>(Default)","60-20-10","60-40-15"
+#define	_tReplays	Replay latest 10sec, Replay latest 15sec, Replay latest 20sec, Replay latest 30sec
+#define	_strMenu	OFF, ON, -, 0, <%String=_tButtons>, -, 0, <%String=_tReplays>
+#define	_iSwitch	<%Format=%d,<%Cond=IsPlayBack>+1>
+#if IsPlayBack
+#macro <%MenuB=_iSwitch, _strMenu>
+#else
+#macro <%MenuB=_iSwitch, OFF, ON>
+#endif
+#if ValMenu
+	#if StrMacro(<%Input$>) >> -
+		#define	_strButtons	<%Format=%.2s,<%Input$>>,<%Format=%.2s,<%Skip$=3,<%Input$>>>,<%Format=%.2s,<%Skip$=6,<%Input$>>>
+		#macro <%PlayBackButtons=_strButtons>
+	#elseif StrMacro(<%Input$>) >> Replay
+		#define	_strTime	<%Format=%d,<%Input$>>
+		#macro <%WaterMsg=3,_strTime>
+		#macro <%PlayBack=_strTime>
+	#else
+		#macro <%PlayBack=<%Input$>>
+	#endif
+#endif
+<%EOF>

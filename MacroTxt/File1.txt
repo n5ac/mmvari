@@ -1,0 +1,5 @@
+<%TX><%RX>
+#repeat  3
+CQ CQ CQ de <%MyCall> <%MyCall> <%MyCall> (<%Format=%d, 1 + $repeat - $counter>)<%SP><%CallProc=DateTime, <%LPTIME>>
+#endp
+pse k...<%CR>

@@ -35,7 +35,7 @@
 #define	VERNO	"0.45"
 #define	INI_SCHEMA	3
 
-#define DEBUG		    TRUE
+#define DEBUG		    FALSE
 #define	MEASIMD			FALSE
 #define	LOGFFT			FALSE
 #define	SHOWERRCOUNT	FALSE

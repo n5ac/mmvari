@@ -35,6 +35,7 @@
 #define	VERNO	"0.45"
 #define	INI_SCHEMA	3
 
+//DEBUG should be FALSE, thanks to Mori-san JE3HHT
 #define DEBUG		    FALSE
 #define	MEASIMD			FALSE
 #define	LOGFFT			FALSE
